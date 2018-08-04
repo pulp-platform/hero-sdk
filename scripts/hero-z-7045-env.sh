@@ -47,7 +47,7 @@ export KERNEL_CROSS_COMPILE=${CROSS_COMPILE}
 export ARM_LIB_DIR1=`realpath lib`
 export ARM_INC_DIR1=${ARM_LIB_DIR1}/inc
 
-source ${HERO_SDK_DIR}/pulp-hero-gnu-gcc-toolchain/setup.sh
+cd ${HERO_TOOLCHAIN_DIR}; source setup.sh; cd -
 export CROSS_COMPILER=${HERO_GCC_INSTALL_DIR}/bin/arm-linux-gnueabihf-
 
 # That's all folks!!
