@@ -1,0 +1,14 @@
+--- cci.c	2018-02-08 18:20:23.227279964 +0100
++++ cci-patched.c	2018-02-08 18:22:00.781247444 +0100
+@@ -92,6 +92,11 @@
+ 
+ 	assert(validate_cci_map(map));
+ 	g_cci_slave_if_map = map;
++
++	/*
++	 * ENABLE NON-SECURE REGISTER ACCESS
++	 */
++	mmio_write_32(g_cci_base + SECURE_ACCESS_REG, 0x1);
+ }
+ 
+ void cci_enable_snoop_dvm_reqs(unsigned int master_id)

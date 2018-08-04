@@ -1,0 +1,9 @@
+[submodule "pulp-sdk"]
+	path = pulp-sdk
+	url = git@github.com:pulp-platform/pulp-sdk.git
+[submodule "pulp-hero-gnu-gcc-toolchain"]
+	path = pulp-hero-gnu-gcc-toolchain
+	url = git@github.com:pulp-platform/pulp-hero-gnu-gcc-toolchain.git
+[submodule "openmp45-hero-tests"]
+	path = openmp45-hero-tests
+	url = git@github.com:alessandrocapotondi/openmp45-hero-tests.git

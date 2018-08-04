@@ -1,0 +1,9 @@
+/* add CPU operating points for max clock frequency of 800MHz */
+&cpu0 {
+  operating-points = <
+    /* kHz    uV */
+    800000  1000000
+    400000  1000000
+    200000  1000000
+  >;
+};

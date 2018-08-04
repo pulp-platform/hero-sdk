@@ -1,0 +1,9 @@
+/* add more CPU operating points to enable cpufreq */
+&cpu0 {
+  operating-points = <
+    /* kHz    uV */
+    666667  1000000
+    333334  1000000
+    166667  1000000
+  >;
+};

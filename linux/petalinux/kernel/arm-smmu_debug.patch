@@ -1,0 +1,217 @@
+--- arm-smmu.c	2018-01-23 18:07:01.023849015 +0100
++++ arm-smmu_debug.c	2018-01-23 18:09:41.779057601 +0100
+@@ -650,7 +650,8 @@
+
+ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ {
+-	u32 fsr, fsynr;
++	int flags, ret;
++	u32 fsr, fsynr, resume;
+ 	unsigned long iova;
+ 	struct iommu_domain *domain = dev;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+@@ -664,15 +665,46 @@
+ 	if (!(fsr & FSR_FAULT))
+ 		return IRQ_NONE;
+
++	if (fsr & FSR_IGN)
++		dev_err_ratelimited(smmu->dev,
++				    "Unexpected context fault (fsr 0x%x)\n",
++				    fsr);
++
+ 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
++	flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
++
+ 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+
+-	dev_err_ratelimited(smmu->dev,
+-	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+-			    fsr, iova, fsynr, cfg->cbndx);
++	//--//
++	//printk(KERN_WARNING "SMMU: context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
++	//	iova, fsynr, cfg->cbndx);
++	//--//
++
++	if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
++		ret = IRQ_HANDLED;
++		resume = RESUME_RETRY;
++	} else {
++		dev_err_ratelimited(smmu->dev,
++		    "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
++		    iova, fsynr, cfg->cbndx);
++		ret = IRQ_NONE;
++		resume = RESUME_TERMINATE;
++	}
++
++	//--//
++	// Let the bottom-half fault handler resume/terminate the faulting transaction
++	//--//
++	if ( ret != IRQ_HANDLED ) {
++	  /* Clear the faulting FSR */
++	  writel(fsr, cb_base + ARM_SMMU_CB_FSR);
++
++	  /* Retry or terminate any stalled transactions */
++	  if (fsr & FSR_SS)
++	    writel_relaxed(resume, cb_base + ARM_SMMU_CB_RESUME);
++	}
++	//--//
+
+-	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
+-	return IRQ_HANDLED;
++	return ret;
+ }
+
+ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+@@ -723,6 +755,10 @@
+ 			reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBA2R_VMID_SHIFT;
+
+ 		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
++		//--//
++		printk(KERN_INFO "SMMU Write GR1 CBA2R: cbndx = %d, reg = %#x\n",
++			(unsigned)cfg->cbndx, (unsigned)reg);
++		//--//
+ 	}
+
+ 	/* CBAR */
+@@ -742,6 +778,10 @@
+ 		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
+ 	}
+ 	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
++	//--//
++	printk(KERN_INFO "SMMU Write GR1 CBAR: cbndx = %d, reg = %#x\n",
++		(unsigned)cfg->cbndx, (unsigned)reg);
++	//--//
+
+ 	/* TTBRs */
+ 	if (stage1) {
+@@ -757,9 +797,17 @@
+ 			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+ 			reg64 |= (u64)asid << TTBRn_ASID_SHIFT;
+ 			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
++			//--//
++			printk(KERN_INFO "SMMU Write GB TTBR0: cbndx = %d, reg64 = %#llx\n",
++				(unsigned)cfg->cbndx, (unsigned long long)reg64);
++			//--//
+ 			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+ 			reg64 |= (u64)asid << TTBRn_ASID_SHIFT;
+ 			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
++			//--//
++			printk(KERN_INFO "SMMU Write GB TTBR1: cbndx = %d, reg64 = %#llx\n",
++				(unsigned)cfg->cbndx, (unsigned long long)reg64);
++			//--//
+ 		}
+ 	} else {
+ 		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+@@ -782,6 +830,12 @@
+ 		reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+ 	}
+ 	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
++	//--//
++	printk(KERN_INFO "SMMU Write TTBCR: cbndx = %d, reg = %#x\n",
++		(unsigned)cfg->cbndx, (unsigned)reg);
++	printk(KERN_INFO "SMMU Write TTBCR2:cbndx = %d,reg2 = %#x\n",
++		(unsigned)cfg->cbndx, (unsigned)reg2);
++	//--//
+
+ 	/* MAIRs (stage-1 only) */
+ 	if (stage1) {
+@@ -794,16 +848,28 @@
+ 		}
+ 		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR0);
+ 		writel_relaxed(reg2, cb_base + ARM_SMMU_CB_S1_MAIR1);
++
++		//--//
++		printk(KERN_INFO "SMMU Write MAIR0: cbndx = %d, reg = %#x\n",
++			(unsigned)cfg->cbndx, (unsigned)reg);
++		printk(KERN_INFO "SMMU Write MAIR1: cbndx = %d,reg2 = %#x\n",
++			(unsigned)cfg->cbndx, (unsigned)reg2);
++		//--//
+ 	}
+
+ 	/* SCTLR */
+-	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
++	reg = SCTLR_CFCFG | SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
+ 	if (stage1)
+ 		reg |= SCTLR_S1_ASIDPNE;
+ #ifdef __BIG_ENDIAN
+ 	reg |= SCTLR_E;
+ #endif
+ 	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
++
++	//--//
++	printk(KERN_INFO "SMMU Write SCTLR: cbndx = %d, reg = %#x\n",
++		(unsigned)cfg->cbndx, (unsigned)reg);
++	//--//
+ }
+
+ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+@@ -1045,6 +1111,12 @@
+ 	struct arm_smmu_smr *smr = smmu->smrs + idx;
+ 	u32 reg = smr->id << SMR_ID_SHIFT | smr->mask << SMR_MASK_SHIFT;
+
++	//--//
++	if (smr->valid)
++	  printk(KERN_INFO "SMMU Write SMR idx = %d, reg = %#x, valid = %d\n",
++	    idx, (unsigned)reg, (unsigned)smr->valid);
++	//--//
++
+ 	if (smr->valid)
+ 		reg |= SMR_VALID;
+ 	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
+@@ -1057,6 +1129,11 @@
+ 		  (s2cr->cbndx & S2CR_CBNDX_MASK) << S2CR_CBNDX_SHIFT |
+ 		  (s2cr->privcfg & S2CR_PRIVCFG_MASK) << S2CR_PRIVCFG_SHIFT;
+
++	//--//
++	printk(KERN_INFO "SMMU Write S2CR: idx = %d, reg = %#x, type = %#x, cbndx = %#x, privcfg = %#x\n",
++	  idx, (unsigned)reg, (unsigned)s2cr->type, (unsigned)s2cr->cbndx, (unsigned)s2cr->privcfg);
++	//--//
++
+ 	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
+ }
+
+@@ -1153,6 +1230,11 @@
+ 		}
+ 		smmu->s2crs[idx].count++;
+ 		cfg->smendx[i] = (s16)idx;
++
++		//--//
++		printk(KERN_INFO "SMMU Alloc SME: idx = %d, sid = %#x, mask = %#x, count = %d\n",
++			(unsigned)idx, (unsigned)sid, (unsigned)mask, (unsigned)smmu->s2crs[idx].count);
++		//--//
+ 	}
+
+ 	group = iommu_group_get_for_dev(dev);
+@@ -1413,6 +1495,10 @@
+ 		u16 sid = fwspec->ids[i];
+ 		u16 mask = fwspec->ids[i] >> SMR_MASK_SHIFT;
+
++		//--//
++		printk(KERN_INFO "SMMU Add Dev: i = %d, sid = %#x, streamid_mask = %#x, mask = %#x, smr_mask_mask = %#x\n", (unsigned)sid, (unsigned)mask, (unsigned)(smmu->streamid_mask), (unsigned)(smmu->smr_mask_mask));
++		//--//
++
+ 		if (sid & ~smmu->streamid_mask) {
+ 			dev_err(dev, "stream ID 0x%x out of range for SMMU (0x%x)\n",
+ 				sid, smmu->streamid_mask);
+@@ -1616,6 +1702,10 @@
+
+ 	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+
++	//--//
++	printk("SMMU Read GR0 sCR0: reg = %#x\n", reg);
++	//--//
++
+ 	/* Enable fault reporting */
+ 	reg |= (sCR0_GFRE | sCR0_GFIE | sCR0_GCFGFRE | sCR0_GCFGFIE);
+
+@@ -1641,6 +1731,10 @@
+ 	/* Push the button */
+ 	__arm_smmu_tlb_sync(smmu);
+ 	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
++
++	//--//
++	printk("SMMU Write GR0 sCR0: reg = %#x\n", reg);
++	//--//
+ }
+
+ static int arm_smmu_id_size_to_bits(int size)

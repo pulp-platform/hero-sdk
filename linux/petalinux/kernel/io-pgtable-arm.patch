@@ -1,0 +1,26 @@
+--- io-pgtable-arm.c	2018-01-29 17:45:57.792836502 +0100
++++ io-pgtable-arm_patched.c	2018-01-29 17:47:07.224979092 +0100
+@@ -297,7 +297,9 @@
+ 	else
+ 		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
+ 
+-	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_IS;
++	//--//
++	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_NS;
++	//--//
+ 	pte |= pfn_to_iopte(paddr >> data->pg_shift, data);
+ 
+ 	__arm_lpae_set_pte(ptep, pte, cfg);
+@@ -674,9 +676,11 @@
+ 		return NULL;
+ 
+ 	/* TCR */
+-	reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
++	//--//
++	reg = (ARM_LPAE_TCR_SH_NS << ARM_LPAE_TCR_SH0_SHIFT) |
+ 	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
+ 	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
++	//--//
+ 
+ 	switch (ARM_LPAE_GRANULE(data)) {
+ 	case SZ_4K:

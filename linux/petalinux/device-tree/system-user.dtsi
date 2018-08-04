@@ -1,0 +1,171 @@
+/include/ "system-conf.dtsi"
+/ {
+
+    /* new nodes */
+    reserved-memory {
+        #address-cells = <2>;
+        #size-cells = <2>;
+        ranges;
+
+        /* contiguous L3 memory for PULP: last 128MiB of first DRAM section */
+        pulp_reserved: pulp_l3_mem@78000000 {
+            compatible = "pulp,bigpulp";
+            no-map;
+            reg = <0x00000000 0x78000000 0x00000000 0x8000000>;
+        };
+    };
+
+};
+
+/* alter existing nodes */
+
+/* add PULP to amba subsystem */
+&amba {
+    pulp: pulp@a0000000 {
+        compatible = "pulp,bigpulp";
+        /* interrupt */
+        interrupt-parent = <&gic>;
+        /*interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;*/
+        interrupts = <0 89 4>;
+        /* contiguous L3 memory */
+        memory-region = <&pulp_reserved>;
+        /* SMMU master interfaces: HPC0 + HP0 */
+        /* AXI ID 0 only - requires #iommu-cells = <0x1>; */
+        /* #stream-id-cells = <2>;
+        iommus = <&smmu 0x200>,
+                 <&smmu 0xE80>; */
+        /* Full AXI IDs (6 bits), requires #iommu-cells = <0x2>; */
+        iommus = <&smmu 0x200 0x3F>,
+                 <&smmu 0xE80 0x3F>;
+
+        /* FPD-DMA channels */
+        dmas = <&fpd_dma_chan7 1 &fpd_dma_chan8 1>;
+        dma-names = "tx_channel", "rx_channel";
+    };
+};
+
+/* enable the SMMU */
+&smmu {
+    #iommu-cells = <2>;
+    status = "okay";
+};
+
+/* enable DMA channels for PULP */
+&fpd_dma_chan7 {
+    status = "okay";
+    #dma-cells = <0x1>;
+    dma-channels = <0x1>;
+};
+&fpd_dma_chan8 {
+    status = "okay";
+    #dma-cells = <0x1>;
+    dma-channels = <0x1>;
+};
+
+/* fix iommus property
+ - make it compatible with #iommu-cells = <0x2>;
+ - delete it to avoid reserveration of context banks */
+&fpd_dma_chan1 {
+    iommus = <&smmu 0x14e8 0>;
+    /delete-property/ iommus;
+};
+&fpd_dma_chan2 {
+    iommus = <&smmu 0x14e9 0>;
+    /delete-property/ iommus;
+};
+&fpd_dma_chan3 {
+    iommus = <&smmu 0x14ea 0>;
+    /delete-property/ iommus;
+};
+&fpd_dma_chan4 {
+    iommus = <&smmu 0x14eb 0>;
+    /delete-property/ iommus;
+};
+&fpd_dma_chan5 {
+    iommus = <&smmu 0x14ec 0>;
+    /delete-property/ iommus;
+};
+&fpd_dma_chan6 {
+    iommus = <&smmu 0x14ee 0>;
+    /delete-property/ iommus;
+};
+&fpd_dma_chan7 {
+    iommus = <&smmu 0x14ee 0>;
+    /delete-property/ iommus;
+};
+&fpd_dma_chan8 {
+    iommus = <&smmu 0x14ef 0>;
+    /delete-property/ iommus;
+};
+&lpd_dma_chan1 {
+    iommus = <&smmu 0x868 0>;
+    /delete-property/ iommus;
+};
+&lpd_dma_chan2 {
+    iommus = <&smmu 0x869 0>;
+    /delete-property/ iommus;
+};
+&lpd_dma_chan3 {
+    iommus = <&smmu 0x86a 0>;
+    /delete-property/ iommus;
+};
+&lpd_dma_chan4 {
+    iommus = <&smmu 0x86b 0>;
+    /delete-property/ iommus;
+};
+&lpd_dma_chan5 {
+    iommus = <&smmu 0x86c 0>;
+    /delete-property/ iommus;
+};
+&lpd_dma_chan6 {
+    iommus = <&smmu 0x86d 0>;
+    /delete-property/ iommus;
+};
+&lpd_dma_chan7 {
+    iommus = <&smmu 0x86e 0>;
+    /delete-property/ iommus;
+};
+&lpd_dma_chan8 {
+    iommus = <&smmu 0x86f 0>;
+    /delete-property/ iommus;
+};
+&nand0 {
+    iommus = <&smmu 0x872 0>;
+    /delete-property/ iommus;
+};
+&gem0 {
+    iommus = <&smmu 0x874 0>;
+    /delete-property/ iommus;
+};
+&gem1 {
+    iommus = <&smmu 0x875 0>;
+    /delete-property/ iommus;
+};
+&gem2 {
+    iommus = <&smmu 0x876 0>;
+    /delete-property/ iommus;
+};
+&gem3 {
+    iommus = <&smmu 0x877 0>;
+    /delete-property/ iommus;
+};
+&qspi {
+    iommus = <&smmu 0x873 0>;
+    /delete-property/ iommus;
+};
+&sdhci0 {
+    iommus = <&smmu 0x870 0>;
+    /delete-property/ iommus;
+};
+&sdhci1 {
+    iommus = <&smmu 0x871 0>;
+    /delete-property/ iommus;
+};
+&usb0 {
+    iommus = <&smmu 0x860 0>;
+    /delete-property/ iommus;
+};
+&usb1 {
+    iommus = <&smmu 0x861 0>;
+    /delete-property/ iommus;
+};

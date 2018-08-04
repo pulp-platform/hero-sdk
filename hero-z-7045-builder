@@ -1,0 +1,121 @@
+#! /bin/bash
+# Copyright (C) 2018 ETH Zurich and University of Bologna
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Error handler
+# set -e
+trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+trap 'echo FAILED COMMAND: $previous_command' ERR
+
+if [[ ! -f "${0##*/}" ]]; then
+    echo "Error: ${0##*/} should be launched from the directory that contains it"
+    exit 1
+fi
+
+# Usage info
+show_help() {
+cat << EOF
+Usage: ${0##*/} [-hadltso]
+HERO SDK builder:
+    -h    : display this help and exit
+    -a    : do all steps
+    -d    : DOWNLOAD external software dependency
+    -l    : build HOST Linux Environment
+    -t    : bulld PULP HERO Toolchain
+    -s    : build PULP SDK
+    -o    : build libpulp-offload library
+EOF
+}
+
+# Global variables
+source scripts/hero-z-7045-env.sh
+PARBUILD=-j12
+DOWNLOAD=false
+BUILD_LINUX=false
+BUILD_TOOLCHAIN=false
+BUILD_SDK=false
+BUILD_LIBPULP=false
+
+while getopts hadltso opt; do
+    case $opt in
+        a)
+            DOWNLOAD=true
+            BUILD_LINUX=true
+            BUILD_TOOLCHAIN=true
+            BUILD_SDK=true
+            BUILD_LIBPULP=true
+            ;;
+        d)
+            DOWNLOAD=true
+            ;;
+        l)
+            BUILD_LINUX=true
+            ;;
+        t)
+            BUILD_TOOLCHAIN=true
+            ;;
+        s)
+            BUILD_SDK=true
+            ;;
+        o)
+            BUILD_LIBPULP=true
+            ;;
+        h)
+            show_help
+            exit 0
+            ;;
+        *)
+            show_help >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [ "$DOWNLOAD" = true ] ; then
+    source scripts/hero-z-7045-get-src.sh
+fi
+
+if [ "$BUILD_SDK" = true ] ; then
+    echo "Compiling the PULP SDK...\n\n"
+    cd ${HERO_SDK_DIR}/pulp-sdk
+    source configs/hero-z-7045.sh
+    make deps all env
+    source sourceme.sh
+    echo "Compiling the PULP SDK...DONE!\n\n"
+fi
+
+if [ "$BUILD_LINUX" = true ] ; then
+    echo "Compiling the HERO LINUX Kernel...\n\n"
+    cd ${HERO_SDK_DIR}/linux/zynqlinux
+    ./hero-z-7045-linux-builder
+    echo "Compiling the HERO LINUX Kernel...DONE!\n\n"
+fi
+
+if [ "$BUILD_LIBPULP" = true ] ; then
+    echo "Compiling the LIBPULP-OFFLOAD...\n\n"
+    cd ${HERO_SDK_DIR}/libpulp-offload
+    make clean all install
+    echo "Compiling the LIBPULP-OFFLOAD...DONE!\n\n"
+fi
+
+if [ "$BUILD_TOOLCHAIN" = true ] ; then
+    echo "Compiling the PULP HERO Toolchain...\n\n"
+    cd ${HERO_SDK_DIR}/pulp-hero-gnu-gcc-toolchain
+    ./hero_accel_builder -a
+    ./hero_host_builder -a
+    echo "Compiling the PULP HERO Toolchain...DONE!\n\n"
+fi
+
+# That's all folks!!

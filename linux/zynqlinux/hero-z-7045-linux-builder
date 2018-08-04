@@ -1,0 +1,85 @@
+#! /bin/bash
+# Copyright (C) 2018 ETH Zurich and University of Bologna
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Error handler
+# set -e
+trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+trap 'echo FAILED COMMAND: $previous_command' ERR
+
+if [[ ! -f "${0##*/}" ]]; then
+    echo "Error: ${0##*/} should be launched from the directory that contains it"
+    exit 1
+fi
+
+# Usage info
+show_help() {
+cat << EOF
+Usage: ${0##*/} [-hx]
+HERO Linux Kernel builder:
+    -h    : display this help and exit
+    -x    : SKIP download of srcs
+EOF
+}
+
+# Global variables
+source .scripts/linux_env.sh
+PARBUILD=-j12
+GET_SOURCES=true
+
+while getopts hx opt; do
+    case $opt in
+        x)
+            GET_SOURCES=false
+            ;;
+        h)
+            show_help
+            exit 0
+            ;;
+        *)
+            show_help >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [ "$GET_SOURCES" = true ] ; then
+    source .scripts/linux_get_src.sh
+fi
+
+# Build Linux Kernel
+cd ${LINUX_WORKSPACE_DIR}/linux-xlnx
+echo "Building Linux Kernel..."
+make UIMAGE_LOADADDR=0x8000 uImage ${PARBUILD}
+cp arch/arm/boot/uImage ${LINUX_INSTALL_DIR}/boot
+
+# Build Modules
+echo "Building Modules..."
+make modules ${PARBUILD}
+make modules_install INSTALL_MOD_PATH=${LINUX_INSTALL_DIR}/lib ${PARBUILD}
+
+# Build U-Boot
+echo "Building u-boot..."
+PATH="${LINUX_WORKSPACE_DIR}/linux-xlnx/scripts/dtc":${PATH}
+cd ${LINUX_WORKSPACE_DIR}/u-boot-xlnx
+make zynq_zc706_config ${PARBUILD}
+make ${PARBUILD}
+cp u-boot ${LINUX_INSTALL_DIR}/boot/u-boot.elf
+
+# Add tools to PATH
+# cd tools
+# PATH=`pwd`:$PATH
+
+# That's all folks!!

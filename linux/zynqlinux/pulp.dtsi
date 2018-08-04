@@ -1,0 +1,39 @@
+/ {
+
+  /* new nodes */
+  reserved-memory {
+    #address-cells = <1>;
+    #size-cells = <1>;
+    ranges;
+
+    /* contiguous L3 memory for PULP: last 128MiB of first DRAM section */
+    pulp_reserved: pulp_l3_mem@38000000 {
+      compatible = "pulp,bigpulp";
+      no-map;
+      reg = <0x38000000 0x8000000>;
+    };
+  };
+
+};
+
+/* add PULP to amba subsystem */
+&amba {
+  pulp: pulp@40000000 {
+    compatible = "pulp,bigpulp";
+    /* interrupt */
+    interrupt-parent = <&intc>;
+    /*interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;*/
+    interrupts = <0 29 4>;
+    /* contiguous L3 memory */
+    memory-region = <&pulp_reserved>;
+
+    /* PL330 DMA channels */
+    dmas = <&dmac_s 6 &dmac_s 7>;
+    dma-names = "tx_channel", "rx_channel";
+  };
+};
+
+/* make sure PL clocks are enabled */
+&clkc {
+  fclk-enable = <0xf>;
+};

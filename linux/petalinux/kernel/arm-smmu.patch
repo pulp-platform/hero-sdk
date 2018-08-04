@@ -1,0 +1,68 @@
+--- arm-smmu.c	2018-01-23 18:07:01.023849015 +0100
++++ arm-smmu_patched.c	2018-01-23 18:11:35.084729772 +0100
+@@ -650,7 +650,8 @@
+
+ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ {
+-	u32 fsr, fsynr;
++	int flags, ret;
++	u32 fsr, fsynr, resume;
+ 	unsigned long iova;
+ 	struct iommu_domain *domain = dev;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+@@ -664,15 +665,41 @@
+ 	if (!(fsr & FSR_FAULT))
+ 		return IRQ_NONE;
+
++	if (fsr & FSR_IGN)
++		dev_err_ratelimited(smmu->dev,
++				    "Unexpected context fault (fsr 0x%x)\n",
++				    fsr);
++
+ 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
++	flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
++
+ 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+
+-	dev_err_ratelimited(smmu->dev,
+-	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+-			    fsr, iova, fsynr, cfg->cbndx);
++	if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
++		ret = IRQ_HANDLED;
++		resume = RESUME_RETRY;
++	} else {
++		dev_err_ratelimited(smmu->dev,
++		    "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
++		    iova, fsynr, cfg->cbndx);
++		ret = IRQ_NONE;
++		resume = RESUME_TERMINATE;
++	}
+
+-	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
+-	return IRQ_HANDLED;
++	//--//
++	// Let the bottom-half fault handler resume/terminate the faulting transaction
++	//--//
++	if ( ret != IRQ_HANDLED ) {
++	  /* Clear the faulting FSR */
++	  writel(fsr, cb_base + ARM_SMMU_CB_FSR);
++
++	  /* Retry or terminate any stalled transactions */
++	  if (fsr & FSR_SS)
++	    writel_relaxed(resume, cb_base + ARM_SMMU_CB_RESUME);
++	}
++	//--//
++
++	return ret;
+ }
+
+ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+@@ -797,7 +824,7 @@
+ 	}
+
+ 	/* SCTLR */
+-	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
++	reg = SCTLR_CFCFG | SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
+ 	if (stage1)
+ 		reg |= SCTLR_S1_ASIDPNE;
+ #ifdef __BIG_ENDIAN

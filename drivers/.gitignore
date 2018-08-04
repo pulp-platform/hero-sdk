@@ -1,0 +1,15 @@
+# File extensions
+*.cmd
+*.ko
+*.ko.cmd
+*.mod.?
+*.o
+*.o_shipped
+*.order
+*.read
+
+# Subdirectories
+/**/.tmp_versions/*
+
+# Files
+Module.symvers
