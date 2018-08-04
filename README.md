@@ -57,5 +57,19 @@ Using the builder you can selectivelly compiler the modules. To see the options 
 
 **TIPS**: some modules has dependencies, so you cannot build the first time the single modules if you do not what are you doing. ;)
 
-## Execute the OpenMP examples
-The HERO SDK contains also some openMP 4.5 example. Before to run som
+# Execute the OpenMP examples
+## Environmental setup
+The HERO SDK contains also some openMP 4.5 example. Before to run some application you should have builded the whole modules, setuped the HERO emulator, and the proper enviromental variales. I.E.:
+```
+cd hero-sdk-repacked
+source source scripts/hero-z-7045-env.sh
+export PULP_EMU_ADDR=<user_id>@<pulp-hero-ip>
+export PULP_EMU_SHARE_DIR=<installation_dir>
+```
+
+## Application Run
+To execute you need only to execute the relative `Makefile`. I.E. `openmp45-hero-tests/helloworld`:
+```
+cd openmp45-hero-tests/helloworld
+make clean all run
+```
