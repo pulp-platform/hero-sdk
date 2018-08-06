@@ -1,4 +1,4 @@
-# hero-sdk-repacked
+# HERO Software Developement Kit v0.1 (Alpha version)
 HERO SDK repacked version
 
 The HERO SDK contains the following packages:
