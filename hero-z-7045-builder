@@ -77,10 +77,25 @@ Usage: ${0##*/} [-hAaPpLlOo]
 HERO SDK builder
 ----------------------------------------------------
 
+HERO toolchain commands
+----------------------------------------------------
+
+    -A : build whole HERO toolchain and its dependecies:
+          > ARM GCC standalone toolchain
+          > RISCV GCC standalone toolchain
+          > PULP SDK
+          > libpulp-offload
+    -a : build HERO toolchain only
+
+
+
+Other Commands
+----------------------------------------------------
+
 PULP SDK commands
 ----------------------------------------------------
 
-    -P : build PULP SDK and its dependecy:
+    -P : build PULP SDK and its dependecies:
           > RISCV GCC standalone toolchain
           > PULP SDK
     -p : build PULP SDK only
@@ -89,7 +104,7 @@ PULP SDK commands
 Linux Kernel commands
 ----------------------------------------------------
 
-    -L : build Linux Kernel and its dependecy:
+    -L : build Linux Kernel and its dependecies:
           > ARM GCC standalone toolchain
           > Linux Kernel 
     -l : build Linux Kernel only
@@ -98,22 +113,12 @@ Linux Kernel commands
 Libpulp-offload commands
 ----------------------------------------------------
 
-    -O : build 'libpulp-offload' and its dependecy:
+    -O : build 'libpulp-offload' and its dependecies:
           > ARM GCC standalone toolchain
           > RISCV GCC standalone toolchain
           > libpulp-offload
     -o : build libpulp-offload only
 
-
-HERO toolchain commands
-----------------------------------------------------
-
-    -A : build 'libpulp-offload' and its dependecy:
-          > ARM GCC standalone toolchain
-          > RISCV GCC standalone toolchain
-          > PULP SDK
-          > libpulp-offload
-    -a : build HERO toolchain only
 EOF
 }
 
