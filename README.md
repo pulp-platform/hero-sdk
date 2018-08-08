@@ -5,7 +5,7 @@ The HERO SDK contains the following packages:
 * PULP HERO Linux Driver;
 * PULP HERO Linux Kernel;
 * User-space library for offloading support (`libpulp-offload`);
-* PULP SDK;
+* PULP SDK ([link](https://github.com/pulp-platform/pulp-sdk]));
 * PULP HERO Toolchain OpenMP4.5 enabled with RISC-V offloading support.
 
 ## Linux dependencies
