@@ -1,6 +1,6 @@
 # HERO Software Developement Kit v0.1 (Alpha version)
-HERO SDK repacked version
 
+## About 
 The HERO SDK contains the following packages:
 * PULP HERO Linux Driver;
 * PULP HERO Linux Kernel;
@@ -8,6 +8,16 @@ The HERO SDK contains the following packages:
 * PULP SDK;
 * PULP HERO Toolchain OpenMP4.5 enabled with RISC-V offloading support.
 
+## Linux dependencies
+Here are the required system dependencies for building the SDK and its dependencies.
+
+### Ubuntu 16.04
+
+Starting from a fresh Ubuntu 16.04 distribution, here are the commands to be executed to get all required dependencies:
+
+    $ sudo apt install git python3-pip gawk texinfo libgmp-dev libmpfr-dev libmpc-dev swig3.0 libjpeg-dev lsb-core doxygen python-sphinx sox graphicsmagick-libmagick-dev-compat libsdl2-dev libswitch-perl libftdi1-dev
+    $ sudo pip3 install artifactory twisted prettytable sqlalchemy pyelftools openpyxl xlsxwriter pyyaml numpy 
+    
 # Checkout the sources
 The HERO SDK uses GIT submodule. To checkout properly the sources you have to execute the following command:
 ```
@@ -18,15 +28,15 @@ or if you use HTTPS
 git clone --recursive https://github.com/pulp-platform/pulp-hero-gnu-gcc-toolchain.git
 ```
 
-# Build System
+## Build System
 The build is automatically managed by scripts. The main builder script is `hero-z-7045-builder`.
 
-## TL;TR;
+### TL;TR;
 You can build everything just launching the following command:
 ```
 ./hero-z-7045-builder -a
 ```
-## Setup HERO emulator using pre-build images
+### Setup HERO emulator using pre-build images
 TODO
 
 Once you have setup the board you should define the following enviromental variables to enable the HERO builder to install the necessary libraries:
@@ -57,8 +67,8 @@ Using the builder you can selectivelly compiler the modules. To see the options 
 
 **TIPS**: some modules has dependencies, so you cannot build the first time the single modules if you do not what are you doing. ;)
 
-# Execute the OpenMP examples
-## Environmental setup
+## Execute the OpenMP examples
+### Environmental setup
 The HERO SDK contains also some openMP 4.5 example. Before to run some application you should have builded the whole modules, setuped the HERO emulator, and the proper enviromental variales. I.E.:
 ```
 cd hero-sdk-repacked
@@ -67,7 +77,7 @@ export PULP_EMU_ADDR=<user_id>@<pulp-hero-ip>
 export PULP_EMU_SHARE_DIR=<installation_dir>
 ```
 
-## Application Run
+### Application Run
 To execute you need only to execute the relative `Makefile`. I.E. `openmp45-hero-tests/helloworld`:
 ```
 cd openmp45-hero-tests/helloworld
