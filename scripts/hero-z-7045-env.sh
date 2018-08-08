@@ -47,7 +47,11 @@ export KERNEL_CROSS_COMPILE=${CROSS_COMPILE}
 export ARM_LIB_DIR1=`realpath lib`
 export ARM_INC_DIR1=${ARM_LIB_DIR1}/inc
 
+#FIXME rework this depepencency check
+# If PULP SDK is builded we can execute also the toolchain setup
+if [ -f ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh ]; then
 cd ${HERO_TOOLCHAIN_DIR}; source setup.sh; cd -
 export CROSS_COMPILER=${HERO_GCC_INSTALL_DIR}/bin/arm-linux-gnueabihf-
+fi
 
 # That's all folks!!
