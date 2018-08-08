@@ -69,7 +69,6 @@ build_hero_toolchain() {
     ./hero_riscv32_toolchain_builder -gj
     ./hero_arm_toolchain_builder -gj
 }
-}
 
 # Usage info
 show_help() {
