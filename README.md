@@ -17,11 +17,11 @@ Starting from a fresh Ubuntu 16.04 distribution, here are the commands to be exe
 ### Checkout the HERO SDK sources
 The HERO SDK uses GIT submodule. To checkout properly the sources you have to execute the following command:
 ```
-git clone --recursive git@github.com:pulp-platform/pulp-hero-gnu-gcc-toolchain.git
+git clone --recursive git@github.com:pulp-platform/hero-sdk-repacked.git
 ```
 or if you use HTTPS
 ```
-git clone --recursive https://github.com/pulp-platform/pulp-hero-gnu-gcc-toolchain.git
+git clone --recursive https://github.com/pulp-platform/hero-sdk-repacked.git
 ```
 
 ## Build System
