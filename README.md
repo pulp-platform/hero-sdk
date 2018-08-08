@@ -26,6 +26,7 @@ git clone --recursive https://github.com/pulp-platform/hero-sdk-repacked.git
 
 ## Build System
 The build is automatically managed by scripts. The main builder script is `hero-z-7045-builder`.
+> Note that `PULP_ARTIFACTORY_USER` environmental should be setup before the build process. [Here](https://iis-git.ee.ethz.ch/pulp-sw/pulp-sdk-internal) you can find the value that you should use.
 
 ### TL;TR;
 You can build everything just launching the following command:
@@ -35,7 +36,7 @@ You can build everything just launching the following command:
 ### Setup HERO emulator using pre-build images
 TODO
 
-Once you have setup the board you should define the following enviromental variables to enable the HERO builder to install the necessary libraries:
+Once you have setup the board you should define the following environmental variables to enable the HERO builder to install the necessary libraries:
 ```
 export PULP_EMU_ADDR=<user_id>@<pulp-hero-ip>
 export PULP_EMU_SHARE_DIR=<installation_dir>
