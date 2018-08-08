@@ -39,11 +39,12 @@ get_sources() {
     git submodule update --init --recursive
 }
 
-update_env() {
+cd ${HERO_SDK_DIR} update_env() {
     source scripts/hero-z-7045-env.sh
 }
 
 build_riscv32_toolchain() {
+    cd ${HERO_SDK_DIR}
     update_env
 
     cd ${HERO_TOOLCHAIN_DIR}
@@ -51,6 +52,7 @@ build_riscv32_toolchain() {
 }
 
 build_pulp_sdk() {
+    cd ${HERO_SDK_DIR}
     update_env
 
     cd ${HERO_PULP_SDK_DIR}
@@ -59,6 +61,7 @@ build_pulp_sdk() {
 }
 
 build_arm_toolchain() {
+    cd ${HERO_SDK_DIR}
     update_env
 
     cd ${HERO_TOOLCHAIN_DIR}
@@ -66,6 +69,7 @@ build_arm_toolchain() {
 }
 
 build_linux() {
+    cd ${HERO_SDK_DIR}
     update_env
 
     cd ${HERO_LINUX_DIR}
@@ -73,6 +77,7 @@ build_linux() {
 }
 
 build_liboffload() {
+    cd ${HERO_SDK_DIR}
     update_env
 
     cd ${HERO_SDK_DIR}/libpulp-offload
@@ -80,6 +85,7 @@ build_liboffload() {
 }
 
 build_hero_toolchain() {
+    cd ${HERO_SDK_DIR}
     update_env
 
     cd ${HERO_TOOLCHAIN_DIR}
