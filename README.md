@@ -24,26 +24,19 @@ or if you use HTTPS
 git clone --recursive https://github.com/pulp-platform/hero-sdk-repacked.git
 ```
 
-## Build System
+## Build the HERO SDK
+### Build all or TL;TR;
 The build is automatically managed by scripts. The main builder script is `hero-z-7045-builder`.
 > Note that `PULP_ARTIFACTORY_USER` environmental should be setup before the build process. [Here](https://iis-git.ee.ethz.ch/pulp-sw/pulp-sdk-internal) you can find the value that you should use.
 
-### TL;TR;
 You can build everything just launching the following command:
 ```
 ./hero-z-7045-builder -a
 ```
-### Setup HERO emulator using pre-build images
-TODO
+The first build takes around 1h. If you want to build a single module you need to use the following advanced commands of the builder. Note, some modules has dependency and require to be build in order. It is suggested to build at least once the whole SDK using the `./hero-z-7045-builder -a` command.
 
-Once you have setup the board you should define the following environmental variables to enable the HERO builder to install the necessary libraries:
-```
-export PULP_EMU_ADDR=<user_id>@<pulp-hero-ip>
-export PULP_EMU_SHARE_DIR=<installation_dir>
-```
-
-## Builder Commands
-Using the builder you can selectivelly compiler the modules. To see the options available you can execute the following command:
+### Builder Advanced Commands
+Using the `hero-z-7045-builder` you can selectivelly compiler the modules. To see the options available you can execute the following command:
 
 ```
 ./hero-z-7045-builder -h
@@ -64,6 +57,14 @@ Using the builder you can selectivelly compiler the modules. To see the options 
 
 **TIPS**: some modules has dependencies, so you cannot build the first time the single modules if you do not what are you doing. ;)
 
+###  Setup HERO emulator using pre-build images
+TODO
+
+Once you have setup the board you should define the following environmental variables to enable the HERO builder to install the necessary libraries:
+```
+export PULP_EMU_ADDR=<user_id>@<pulp-hero-ip>
+export PULP_EMU_SHARE_DIR=<installation_dir>
+```
 ## Execute the OpenMP examples
 ### Environmental setup
 The HERO SDK contains also some openMP 4.5 example. Before to run some application you should have builded the whole modules, setuped the HERO emulator, and the proper enviromental variales. I.E.:
