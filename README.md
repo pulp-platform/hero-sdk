@@ -80,3 +80,7 @@ To execute you need only to execute the relative `Makefile`. I.E. `openmp45-hero
 cd openmp45-hero-tests/helloworld
 make clean all run
 ```
+
+## Issues and throubleshooting
+If you find problems or issues during the build process you can take a look on the troubleshooting [page](FAQ.md) or you can directly open an [issue](https://github.com/pulp-platform/hero-sdk-repacked/issues) in case your problem is not a common one.
+
