@@ -24,53 +24,151 @@ if [[ ! -f "${0##*/}" ]]; then
     exit 1
 fi
 
+# Setup the envioronmental variables
+source scripts/hero-z-7045-env.sh
+
+get_sources() {
+    cd ${HERO_TOOLCHAIN_DIR}
+    git submodule update --init --recursive
+
+    cd ${HERO_PULP_SDK_DIR}
+    git submodule update --init --recursive
+
+    # Binutils sources
+    cd ${HERO_OMP_TESTS_DIR}
+    git submodule update --init --recursive
+}
+
+build_riscv32_toolchain() {
+    cd ${HERO_TOOLCHAIN_DIR}
+    ./hero_riscv32_toolchain_builder -dPj
+}
+
+build_pulp_sdk() {
+    cd ${HERO_PULP_SDK_DIR}
+    source configs/hero-z-7045.sh
+    make all env
+}
+
+build_arm_toolchain() {
+    cd ${HERO_TOOLCHAIN_DIR}
+    ./hero_arm_toolchain_builder -dPj
+}
+
+build_linux() {
+    cd ${HERO_LINUX_DIR}
+    ./hero-z-7045-linux-builder
+}
+
+build_liboffload() {
+    cd ${HERO_SDK_DIR}/libpulp-offload
+    make clean all install
+}
+
+build_hero_toolchain() {
+    ./hero_riscv32_toolchain_builder -gj
+    ./hero_arm_toolchain_builder -gj
+}
+}
+
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hadltso]
-HERO SDK builder:
-    -h    : display this help and exit
-    -a    : do all steps
-    -d    : DOWNLOAD external software dependency
-    -l    : build HOST Linux Environment
-    -t    : bulld PULP HERO Toolchain
-    -s    : build PULP SDK
-    -o    : build libpulp-offload library
+Usage: ${0##*/} [-hAaPpLlOo]
+HERO SDK builder
+----------------------------------------------------
+
+PULP SDK commands
+----------------------------------------------------
+
+    -P : build PULP SDK and its dependecy:
+          > RISCV GCC standalone toolchain
+          > PULP SDK
+    -p : build PULP SDK only
+
+
+Linux Kernel commands
+----------------------------------------------------
+
+    -L : build Linux Kernel and its dependecy:
+          > ARM GCC standalone toolchain
+          > Linux Kernel 
+    -l : build Linux Kernel only
+
+
+Libpulp-offload commands
+----------------------------------------------------
+
+    -O : build 'libpulp-offload' and its dependecy:
+          > ARM GCC standalone toolchain
+          > RISCV GCC standalone toolchain
+          > libpulp-offload
+    -o : build libpulp-offload only
+
+
+HERO toolchain commands
+----------------------------------------------------
+
+    -A : build 'libpulp-offload' and its dependecy:
+          > ARM GCC standalone toolchain
+          > RISCV GCC standalone toolchain
+          > PULP SDK
+          > libpulp-offload
+    -a : build HERO toolchain only
 EOF
 }
 
-# Global variables
-source scripts/hero-z-7045-env.sh
-PARBUILD=-j12
-DOWNLOAD=false
-BUILD_LINUX=false
-BUILD_TOOLCHAIN=false
-BUILD_SDK=false
-BUILD_LIBPULP=false
+do_get_sources=false
+do_build_riscv32_toolchain=false
+do_build_arm_toolchain=false
+do_build_pulp_sdk=false
+do_build_arm_toolchain=false
+do_build_linux=false
+do_build_liboffload=false
+do_build_hero_toolchain=false
 
-while getopts hadltso opt; do
+
+while getopts hAaPpLlOod opt; do
     case $opt in
-        a)
-            DOWNLOAD=true
-            BUILD_LINUX=true
-            BUILD_TOOLCHAIN=true
-            BUILD_SDK=true
-            BUILD_LIBPULP=true
+        P)
+            do_get_sources=true
+            do_build_riscv32_toolchain=true
+            do_build_pulp_sdk=true
             ;;
-        d)
-            DOWNLOAD=true
+        p)
+            do_build_pulp_sdk=true
+            ;;
+        L)
+            do_get_sources=true
+            do_build_arm_toolchain=true
+            do_build_linux=true
             ;;
         l)
-            BUILD_LINUX=true
+            do_build_linux=true
             ;;
-        t)
-            BUILD_TOOLCHAIN=true
-            ;;
-        s)
-            BUILD_SDK=true
+        O)
+            do_get_sources=true
+            do_build_riscv32_toolchain=true
+            do_build_pulp_sdk=true
+            do_build_arm_toolchain=true
+            do_build_liboffload=true
             ;;
         o)
-            BUILD_LIBPULP=true
+            do_build_liboffload=true
+            ;;
+        d) 
+            do_get_sources=true
+            ;;
+        A)
+            do_get_sources=true
+            do_build_riscv32_toolchain=true
+            do_build_pulp_sdk=true
+            do_build_arm_toolchain=true
+            do_build_liboffload=true
+            do_build_hero_toolchain=true
+            ;;
+        a)
+            do_build_hero_toolchain=true
             ;;
         h)
             show_help
@@ -83,39 +181,32 @@ while getopts hadltso opt; do
     esac
 done
 
-if [ "$DOWNLOAD" = true ] ; then
-    source scripts/hero-z-7045-get-src.sh
+if [ "$do_get_sources" = true ] ; then
+    get_sources
 fi
 
-if [ "$BUILD_SDK" = true ] ; then
-    echo "Compiling the PULP SDK...\n\n"
-    cd ${HERO_SDK_DIR}/pulp-sdk
-    source configs/hero-z-7045.sh
-    make deps all env
-    source sourceme.sh
-    echo "Compiling the PULP SDK...DONE!\n\n"
+if [ "$do_build_riscv32_toolchain" = true ] ; then
+    build_riscv32_toolchain
 fi
 
-if [ "$BUILD_LINUX" = true ] ; then
-    echo "Compiling the HERO LINUX Kernel...\n\n"
-    cd ${HERO_SDK_DIR}/linux/zynqlinux
-    ./hero-z-7045-linux-builder
-    echo "Compiling the HERO LINUX Kernel...DONE!\n\n"
+if [ "$do_build_arm_toolchain" = true ] ; then
+    build_arm_toolchain
 fi
 
-if [ "$BUILD_LIBPULP" = true ] ; then
-    echo "Compiling the LIBPULP-OFFLOAD...\n\n"
-    cd ${HERO_SDK_DIR}/libpulp-offload
-    make clean all install
-    echo "Compiling the LIBPULP-OFFLOAD...DONE!\n\n"
+if [ "$do_build_pulp" = true ] ; then
+    build_pulp_sdk
 fi
 
-if [ "$BUILD_TOOLCHAIN" = true ] ; then
-    echo "Compiling the PULP HERO Toolchain...\n\n"
-    cd ${HERO_SDK_DIR}/pulp-hero-gnu-gcc-toolchain
-    ./hero_accel_builder -a
-    ./hero_host_builder -a
-    echo "Compiling the PULP HERO Toolchain...DONE!\n\n"
+if [ "$do_build_pulp" = true ] ; then
+    build_linux
+fi
+
+if [ "$do_build_liboffload" = true ] ; then
+    build_liboffload
+fi
+
+if [ "$do_build_hero_toolchain" = true ] ; then
+    build_hero_toolchain
 fi
 
 # That's all folks!!

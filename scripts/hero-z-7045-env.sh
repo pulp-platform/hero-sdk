@@ -26,16 +26,30 @@ fi
 
 if [[ -z "${HERO_TOOLCHAIN_DIR}" ]]; then
 	export HERO_TOOLCHAIN_DIR=`realpath pulp-hero-gnu-gcc-toolchain`
+	cd ${HERO_TOOLCHAIN_DIR}
+    source setup.sh
+    cd -
 fi
 
-if [ -f ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh ]; then
-	# PULP Side SDK Configurations
-	export PULP_INC_DIR1=`realpath pulp-sdk/pkg/sdk/dev/install/include/archi/chips/bigpulp`
-	export PULP_INC_DIR2=`realpath pulp-sdk/pkg/sdk/dev/install/include`
-    source ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh
+if [[ -z "${HERO_PULP_SDK_DIR}" ]]; then
+	export HERO_PULP_SDK_DIR=`realpath pulp-sdk`
 fi
 
-# HOST Side Configurations
+if [[ -z "${HERO_OMP_TESTS_DIR}" ]]; then
+	export HERO_OMP_TESTS_DIR=`realpath openmp45-hero-tests`
+fi
+
+if [[ -z "${HERO_LINUX_DIR}" ]]; then
+	export HERO_LINUX_DIR=`realpath linux/zynqlinux/linux-xlnx`
+fi
+
+if [ -f ${HERO_PULP_SDK_DIR}/sourceme.sh ]; then
+export PULP_INC_DIR1=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include/archi/chips/bigpulp
+export PULP_INC_DIR2=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include
+	source ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh
+fi
+
+# Linux Side Configurations
 export ARCH="arm"
 export CROSS_COMPILE="arm-linux-gnueabihf-"
 export HERO_LINUX_KERNEL_DIR=`realpath linux/zynqlinux/linux-xlnx`
@@ -47,11 +61,11 @@ export KERNEL_CROSS_COMPILE=${CROSS_COMPILE}
 export ARM_LIB_DIR1=`realpath lib`
 export ARM_INC_DIR1=${ARM_LIB_DIR1}/inc
 
-#FIXME rework this depepencency check
-# If PULP SDK is builded we can execute also the toolchain setup
-if [ -f ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh ]; then
-cd ${HERO_TOOLCHAIN_DIR}; source setup.sh; cd -
-export CROSS_COMPILER=${HERO_GCC_INSTALL_DIR}/bin/arm-linux-gnueabihf-
-fi
+# #FIXME rework this depepencency check
+# # If PULP SDK is builded we can execute also the toolchain setup
+# if [ -f ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh ]; then
+# 	cd ${HERO_TOOLCHAIN_DIR}; source setup.sh; cd -
+# 	export CROSS_COMPILER=${HERO_GCC_INSTALL_DIR}/bin/arm-linux-gnueabihf-
+# fi
 
 # That's all folks!!
