@@ -8,17 +8,13 @@ The HERO SDK contains the following packages:
 * PULP SDK ([link](https://github.com/pulp-platform/pulp-sdk]));
 * PULP HERO Toolchain OpenMP4.5 enabled with RISC-V offloading support.
 
-## Linux dependencies
-Here are the required system dependencies for building the SDK and its dependencies.
-
-### Ubuntu 16.04
-
+### Prerequisites (on Ubuntu 16.04)
 Starting from a fresh Ubuntu 16.04 distribution, here are the commands to be executed to get all required dependencies:
 
-    $ sudo apt install git python3-pip gawk texinfo libgmp-dev libmpfr-dev libmpc-dev swig3.0 libjpeg-dev lsb-core doxygen python-sphinx sox graphicsmagick-libmagick-dev-compat libsdl2-dev libswitch-perl libftdi1-dev
-    $ sudo pip3 install artifactory twisted prettytable sqlalchemy pyelftools openpyxl xlsxwriter pyyaml numpy 
+    sudo apt install git python3-pip gawk texinfo libgmp-dev libmpfr-dev libmpc-dev swig3.0 libjpeg-dev lsb-core doxygen python-sphinx sox graphicsmagick-libmagick-dev-compat libsdl2-dev libswitch-perl libftdi1-dev
+    sudo pip3 install artifactory twisted prettytable sqlalchemy pyelftools openpyxl xlsxwriter pyyaml numpy 
     
-# Checkout the sources
+### Checkout the HERO SDK sources
 The HERO SDK uses GIT submodule. To checkout properly the sources you have to execute the following command:
 ```
 git clone --recursive git@github.com:pulp-platform/pulp-hero-gnu-gcc-toolchain.git
