@@ -27,8 +27,6 @@ git clone --recursive https://github.com/pulp-platform/hero-sdk-repacked.git
 ## Build the HERO SDK
 ### Build all or TL;TR;
 The build is automatically managed by scripts. The main builder script is `hero-z-7045-builder`.
-> Note that `PULP_ARTIFACTORY_USER` environmental should be setup before the build process. [Here](https://iis-git.ee.ethz.ch/pulp-sw/pulp-sdk-internal) you can find the value that you should use.
-
 You can build everything just launching the following command:
 ```
 ./hero-z-7045-builder -A
