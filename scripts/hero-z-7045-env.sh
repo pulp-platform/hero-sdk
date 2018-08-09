@@ -20,6 +20,18 @@
 export PLATFORM="2"
 export BOARD="zc706"
 
+# Linux Side Configurations
+export ARCH="arm"
+export CROSS_COMPILE="arm-linux-gnueabihf-"
+export HERO_LINUX_KERNEL_DIR=`realpath linux/zynqlinux/linux-xlnx`
+
+# -- Legacy Environmental Variables --
+export KERNEL_DIR=${HERO_LINUX_KERNEL_DIR}
+export KERNEL_ARCH=${ARCH}
+export KERNEL_CROSS_COMPILE=${CROSS_COMPILE}
+export ARM_LIB_DIR1=`realpath lib`
+export ARM_INC_DIR1=${ARM_LIB_DIR1}/inc
+
 if [[ -z "${HERO_SDK_DIR}" ]]; then
 	export HERO_SDK_DIR=`realpath .`
 fi
@@ -28,7 +40,7 @@ if [[ -z "${HERO_TOOLCHAIN_DIR}" ]]; then
 	export HERO_TOOLCHAIN_DIR=`realpath pulp-hero-gnu-gcc-toolchain`
 	cd ${HERO_TOOLCHAIN_DIR}
     source setup.sh
-    export CROSS_COMPILER=${HERO_GCC_INSTALL_DIR}/bin/arm-linux-gnueabihf-
+    export CROSS_COMPILE=${HERO_GCC_INSTALL_DIR}/bin/arm-linux-gnueabihf-
 fi
 
 if [[ -z "${HERO_PULP_SDK_DIR}" ]]; then
@@ -49,16 +61,6 @@ export PULP_INC_DIR2=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include
 	source ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh
 fi
 
-# Linux Side Configurations
-export ARCH="arm"
-export CROSS_COMPILE="arm-linux-gnueabihf-"
-export HERO_LINUX_KERNEL_DIR=`realpath linux/zynqlinux/linux-xlnx`
 
-# -- Legacy Environmental Variables --
-export KERNEL_DIR=${HERO_LINUX_KERNEL_DIR}
-export KERNEL_ARCH=${ARCH}
-export KERNEL_CROSS_COMPILE=${CROSS_COMPILE}
-export ARM_LIB_DIR1=`realpath lib`
-export ARM_INC_DIR1=${ARM_LIB_DIR1}/inc
 
 # That's all folks!!
