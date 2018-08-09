@@ -27,13 +27,11 @@ git clone --recursive https://github.com/pulp-platform/hero-sdk-repacked.git
 ## Build the HERO SDK
 ### Build all or TL;TR;
 The build is automatically managed by scripts. The main builder script is `hero-z-7045-builder`.
-> Note that `PULP_ARTIFACTORY_USER` environmental should be setup before the build process. [Here](https://iis-git.ee.ethz.ch/pulp-sw/pulp-sdk-internal) you can find the value that you should use.
-
 You can build everything just launching the following command:
 ```
-./hero-z-7045-builder -a
+./hero-z-7045-builder -A
 ```
-The first build takes around 1h. If you want to build a single module you need to use the following advanced commands of the builder. Note, some modules has dependency and require to be build in order. It is suggested to build at least once the whole SDK using the `./hero-z-7045-builder -a` command.
+The first build takes around 1h. If you want to build a single module you need to use the following advanced commands of the builder. Note, some modules has dependency and require to be build in order. It is suggested to build at least once the whole SDK using the `./hero-z-7045-builder -A` command.
 
 ### Builder Advanced Commands
 Using the `hero-z-7045-builder` you can selectivelly compiler the modules. To see the options available you can execute the following command:
@@ -44,18 +42,52 @@ Using the `hero-z-7045-builder` you can selectivelly compiler the modules. To se
 
 >Output:
 >```
->Usage: hero-z-7045-builder [-hadltsp]
->HERO SDK builder:
->    -h    : display this help and exit
->    -a    : do all steps
->    -d    : DOWNLOAD external software dependency
->    -l    : build HOST Linux Environment
->    -t    : bulld PULP HERO Toolchain
->    -s    : build PULP SDK
->    -o    : build libpulp-offload library
+>Usage: hero-z-7045-builder [-hAaPpLlOo]
+>HERO SDK builder
+>----------------------------------------------------
+>
+>HERO toolchain commands
+>----------------------------------------------------
+>
+>    -A : build whole HERO toolchain and its dependecies:
+>          > ARM GCC standalone toolchain
+>          > RISCV GCC standalone toolchain
+>          > PULP SDK
+>          > libpulp-offload
+>    -a : build HERO toolchain only
+>
+>
+>
+>Other Commands
+>----------------------------------------------------
+>
+>PULP SDK commands
+>----------------------------------------------------
+>
+>    -P : build PULP SDK and its dependecies:
+>          > RISCV GCC standalone toolchain
+>          > PULP SDK
+>    -p : build PULP SDK only
+>
+>
+>Linux Kernel commands
+>----------------------------------------------------
+>
+>    -L : build Linux Kernel and its dependecies:
+>          > ARM GCC standalone toolchain
+>          > Linux Kernel 
+>    -l : build Linux Kernel only
+>
+>
+>Libpulp-offload commands
+>----------------------------------------------------
+>
+>    -O : build 'libpulp-offload' and its dependecies:
+>          > ARM GCC standalone toolchain
+>          > RISCV GCC standalone toolchain
+>          > libpulp-offload
+>    -o : build libpulp-offload only
 >```
-
-**TIPS**: some modules has dependencies, so you cannot build the first time the single modules if you do not what are you doing. ;)
 
 ###  Setup HERO emulator using pre-build images
 TODO
