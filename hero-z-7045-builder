@@ -81,7 +81,7 @@ build_liboffload() {
     update_env
 
     cd ${HERO_SDK_DIR}/libpulp-offload
-    make clean all install
+    make clean all
 }
 
 build_hero_toolchain() {
