@@ -23,7 +23,6 @@ export BOARD="zc706"
 # Linux Side Configurations
 export ARCH="arm"
 export CROSS_COMPILE="arm-linux-gnueabihf-"
-export HERO_LINUX_KERNEL_DIR=`realpath linux/zynqlinux/linux-xlnx`
 
 # -- Legacy Environmental Variables --
 export KERNEL_DIR=${HERO_LINUX_KERNEL_DIR}
@@ -36,11 +35,16 @@ if [[ -z "${HERO_SDK_DIR}" ]]; then
 	export HERO_SDK_DIR=`realpath .`
 fi
 
+if [[ -z "${HERO_LINUX_KERNEL_DIR}" ]]; then
+	export HERO_LINUX_KERNEL_DIR=${HERO_SDK_DIR}/linux/zynqlinux/linux-xlnx
+fi
+
 if [[ -z "${HERO_TOOLCHAIN_DIR}" ]]; then
 	export HERO_TOOLCHAIN_DIR=`realpath pulp-hero-gnu-gcc-toolchain`
 	cd ${HERO_TOOLCHAIN_DIR}
     source setup.sh
     export CROSS_COMPILE=${HERO_GCC_INSTALL_DIR}/bin/arm-linux-gnueabihf-
+    cd -
 fi
 
 if [[ -z "${HERO_PULP_SDK_DIR}" ]]; then
@@ -51,13 +55,9 @@ if [[ -z "${HERO_OMP_TESTS_DIR}" ]]; then
 	export HERO_OMP_TESTS_DIR=`realpath openmp45-hero-tests`
 fi
 
-if [[ -z "${HERO_LINUX_DIR}" ]]; then
-	export HERO_LINUX_DIR=`realpath linux/zynqlinux/linux-xlnx`
-fi
-
 if [ -f ${HERO_PULP_SDK_DIR}/sourceme.sh ]; then
-export PULP_INC_DIR1=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include/archi/chips/bigpulp
-export PULP_INC_DIR2=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include
+	export PULP_INC_DIR1=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include/archi/chips/bigpulp
+	export PULP_INC_DIR2=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include
 	source ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh
 fi
 
