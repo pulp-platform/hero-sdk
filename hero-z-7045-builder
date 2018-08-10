@@ -254,7 +254,7 @@ if [ "$do_build_arm_toolchain" = true ] ; then
     build_arm_toolchain
 fi
 
-if [ "$do_build_pulp" = true ] ; then
+if [ "$do_build_pulp_sdk" = true ] ; then
     build_pulp_sdk
 fi
 
