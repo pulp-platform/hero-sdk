@@ -138,11 +138,14 @@ HERO toolchain commands
 ----------------------------------------------------
 
     -A : build whole HERO toolchain and its dependecies:
-          > ARM GCC standalone toolchain
           > RISCV GCC standalone toolchain
           > PULP SDK
+          > ARM GCC standalone toolchain
+          > Linux kernel
           > libpulp-offload
     -a : build HERO toolchain only
+          > RISCV GCC standalone toolchain
+          > ARM GCC standalone toolchain
 
 
 
@@ -158,12 +161,12 @@ PULP SDK commands
     -p : build PULP SDK only
 
 
-Linux Kernel commands
+Linux kernel commands
 ----------------------------------------------------
 
     -L : build Linux Kernel and its dependecies:
           > ARM GCC standalone toolchain
-          > Linux Kernel 
+          > Linux kernel
     -l : build Linux Kernel only
 
 
