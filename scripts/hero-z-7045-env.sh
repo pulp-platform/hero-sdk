@@ -17,26 +17,31 @@
 # HERO on ZC706 Envoronment
 #
 
+# Host-side platform config
 export PLATFORM="2"
 export BOARD="zc706"
 
-# Linux Side Configurations
+# Host-side user-space config
 export ARCH="arm"
 export CROSS_COMPILE="arm-linux-gnueabihf-"
-
-# -- Legacy Environmental Variables --
-export KERNEL_DIR=${HERO_LINUX_KERNEL_DIR}
-export KERNEL_ARCH=${ARCH}
-export KERNEL_CROSS_COMPILE=${CROSS_COMPILE}
 export ARM_LIB_DIR1=`realpath lib`
 export ARM_INC_DIR1=${ARM_LIB_DIR1}/inc
 
+# Host-side kernel-space config (1)
+export KERNEL_ARCH=${ARCH}
+export KERNEL_CROSS_COMPILE=${CROSS_COMPILE}
+
+# HERO toolchain config
 if [[ -z "${HERO_SDK_DIR}" ]]; then
 	export HERO_SDK_DIR=`realpath .`
 fi
 
+if [[ -z "${HERO_LINUX_WORKSPACE_DIR}" ]]; then
+    export HERO_LINUX_WORKSPACE_DIR=${HERO_SDK_DIR}/zynqlinux
+fi
+
 if [[ -z "${HERO_LINUX_KERNEL_DIR}" ]]; then
-	export HERO_LINUX_KERNEL_DIR=${HERO_SDK_DIR}/linux/zynqlinux/linux-xlnx
+	export HERO_LINUX_KERNEL_DIR=${HERO_LINUX_WORKSPACE_DIR}/linux-xlnx
 fi
 
 if [[ -z "${HERO_TOOLCHAIN_DIR}" ]]; then
@@ -51,6 +56,10 @@ if [[ -z "${HERO_PULP_SDK_DIR}" ]]; then
 	export HERO_PULP_SDK_DIR=`realpath pulp-sdk`
 fi
 
+if [[ -z "${HERO_SUPPORT_DIR}" ]]; then
+    export HERO_SUPPORT_DIR=`realpath hero-support`
+fi
+
 if [[ -z "${HERO_OMP_TESTS_DIR}" ]]; then
 	export HERO_OMP_TESTS_DIR=`realpath openmp45-hero-tests`
 fi
@@ -61,6 +70,7 @@ if [ -f ${HERO_PULP_SDK_DIR}/sourceme.sh ]; then
 	source ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh
 fi
 
-
+# Host-side kernel-space config (2)
+export KERNEL_DIR=${HERO_LINUX_KERNEL_DIR}
 
 # That's all folks!!
