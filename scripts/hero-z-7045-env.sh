@@ -48,7 +48,7 @@ if [[ -z "${HERO_TOOLCHAIN_DIR}" ]]; then
 	export HERO_TOOLCHAIN_DIR=`realpath pulp-hero-gnu-gcc-toolchain`
 	cd ${HERO_TOOLCHAIN_DIR}
     source setup.sh
-    export CROSS_COMPILE=${HERO_GCC_INSTALL_DIR}/bin/arm-linux-gnueabihf-
+    export PATH=${HERO_GCC_INSTALL_DIR}/bin/:${PATH}
     cd -
 fi
 
