@@ -225,6 +225,7 @@ while getopts hAaPpLlOod opt; do
             do_build_riscv32_toolchain=true
             do_build_pulp_sdk=true
             do_build_arm_toolchain=true
+            do_build_linux=true
             do_build_liboffload=true
             do_build_hero_toolchain=true
             ;;
