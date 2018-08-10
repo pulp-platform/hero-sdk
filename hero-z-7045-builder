@@ -227,7 +227,7 @@ if [ "$do_build_pulp" = true ] ; then
     build_pulp_sdk
 fi
 
-if [ "$do_build_pulp" = true ] ; then
+if [ "$do_build_linux" = true ] ; then
     build_linux
 fi
 
