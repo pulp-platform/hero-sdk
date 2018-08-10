@@ -24,6 +24,13 @@ if [[ ! -f "${0##*/}" ]]; then
     exit 1
 fi
 
+# Build configuration
+PARBUILD=-j8
+
+# Specify path to existing zynqlinux workspace.
+# If not specified, a new one will be created locally.
+export HERO_LINUX_WORKSPACE_DIR=""
+
 # Setup the envioronmental variables
 source scripts/hero-z-7045-env.sh
 
@@ -75,8 +82,32 @@ build_linux() {
     cd ${HERO_SDK_DIR}
     update_env
 
-    cd ${HERO_LINUX_DIR}
-    ./hero-z-7045-linux-builder
+    # Does the kernel directory already exist? It may be external.
+    if [ ! -d "${HERO_LINUX_KERNEL_DIR}" ]; then
+
+        # Prepare Linux workspace and get sources
+        mkdir -p ${HERO_LINUX_WORKSPACE_DIR}
+        cp -r ${HERO_SUPPORT_DIR}/linux/zynqlinux/* ${HERO_LINUX_WORKSPACE_DIR}/.
+        cd ${HERO_LINUX_WORKSPACE_DIR}
+        ./setup.sh
+
+        # Try to build kernel (will fail because of missing U-Boot mkimage)
+        cd ${HERO_LINUX_KERNEL_DIR}
+        {
+            ./compile_kernel.sh  ${PARBUILD}
+        } || {
+            echo "Linux kernel build failed as expected. I will retry later."
+        }
+
+        # Build U-Boot (needed for kernel build)
+        cd ${HERO_LINUX_WORKSPACE_DIR}/u-boot-xlnx
+        ./compile_loader.sh ${PARBUILD}
+
+        # Build kernel & modules
+        cd ${HERO_LINUX_KERNEL_DIR}
+        ./compile_kernel.sh  ${PARBUILD}
+        ./compile_modules.sh ${PARBUILD}
+    fi
 }
 
 build_liboffload() {
