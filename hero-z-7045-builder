@@ -34,6 +34,9 @@ get_sources() {
     cd ${HERO_PULP_SDK_DIR}
     git submodule update --init --recursive
 
+    cd ${HERO_SUPPORT_DIR}
+    git submodule update --init --recursive
+
     # Binutils sources
     cd ${HERO_OMP_TESTS_DIR}
     git submodule update --init --recursive

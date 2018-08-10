@@ -7,3 +7,7 @@
 [submodule "openmp45-hero-tests"]
 	path = openmp45-hero-tests
 	url = https://github.com/alessandrocapotondi/openmp45-hero-tests.git
+[submodule "hero-support"]
+	path = hero-support
+	url = git@iis-git.ee.ethz.ch:pulp-restricted/hsa_support.git
+	branch = release
