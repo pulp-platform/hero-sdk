@@ -47,8 +47,10 @@ fi
 if [[ -z "${HERO_TOOLCHAIN_DIR}" ]]; then
 	export HERO_TOOLCHAIN_DIR=`realpath pulp-hero-gnu-gcc-toolchain`
 	cd ${HERO_TOOLCHAIN_DIR}
-    source setup.sh
-    export PATH=${HERO_GCC_INSTALL_DIR}/bin/:${PATH}
+    if [ -f setup.sh ]; then
+        source setup.sh
+        export PATH=${HERO_GCC_INSTALL_DIR}/bin/:${PATH}
+    fi
     cd -
 fi
 
