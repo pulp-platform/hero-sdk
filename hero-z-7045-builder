@@ -136,47 +136,26 @@ HERO SDK builder
 HERO toolchain commands
 ----------------------------------------------------
 
-    -A : build whole HERO toolchain and its dependecies:
-          > RISCV GCC standalone toolchain
-          > PULP SDK
-          > ARM GCC standalone toolchain
-          > Linux kernel
-          > libpulp-offload
-    -a : build HERO toolchain only
-          > RISCV GCC standalone toolchain
-          > ARM GCC standalone toolchain
+  -A : build whole HERO toolchain and its dependecies:
+    > get sources
+    > RISCV GCC standalone toolchain
+    > PULP SDK
+    > ARM GCC standalone toolchain
+    > Linux kernel
+    > libpulp-offload
+    > HERO toolchain
 
 
-
-Other Commands
+Commands for building individual components
 ----------------------------------------------------
 
-PULP SDK commands
-----------------------------------------------------
-
-    -P : build PULP SDK and its dependecies:
-          > RISCV GCC standalone toolchain
-          > PULP SDK
-    -p : build PULP SDK only
-
-
-Linux kernel commands
-----------------------------------------------------
-
-    -L : build Linux Kernel and its dependecies:
-          > ARM GCC standalone toolchain
-          > Linux kernel
-    -l : build Linux Kernel only
-
-
-Libpulp-offload commands
-----------------------------------------------------
-
-    -O : build 'libpulp-offload' and its dependecies:
-          > ARM GCC standalone toolchain
-          > RISCV GCC standalone toolchain
-          > libpulp-offload
-    -o : build libpulp-offload only
+  -s : get sources
+  -r : RISCV GCC standalone toolchain
+  -p : PULP SDK
+  -a : ARM GCC standalone toolchain
+  -l : Linux kernel
+  -o : libpulp-offload
+  -t : HERO toolchain
 
 EOF
 }
@@ -193,38 +172,9 @@ do_build_linux=false
 do_build_liboffload=false
 do_build_hero_toolchain=false
 
-
-while getopts hAaPpLlOod opt; do
+while getopts hAsrpalot opt; do
     case $opt in
-        P)
-            do_get_sources=true
-            do_build_riscv32_toolchain=true
-            do_build_pulp_sdk=true
-            ;;
-        p)
-            do_build_pulp_sdk=true
-            ;;
-        L)
-            do_get_sources=true
-            do_build_arm_toolchain=true
-            do_build_linux=true
-            ;;
-        l)
-            do_build_linux=true
-            ;;
-        O)
-            do_get_sources=true
-            do_build_riscv32_toolchain=true
-            do_build_pulp_sdk=true
-            do_build_arm_toolchain=true
-            do_build_liboffload=true
-            ;;
-        o)
-            do_build_liboffload=true
-            ;;
-        d) 
-            do_get_sources=true
-            ;;
+
         A)
             do_get_sources=true
             do_build_riscv32_toolchain=true
@@ -234,7 +184,25 @@ while getopts hAaPpLlOod opt; do
             do_build_liboffload=true
             do_build_hero_toolchain=true
             ;;
+        s)
+            do_get_sources=true
+            ;;
+        r)
+            do_build_riscv32_toolchain=true
+            ;;
+        p)
+            do_build_pulp_sdk=true
+            ;;
         a)
+            do_build_arm_toolchain=true
+            ;;
+        l)
+            do_build_linux=true
+            ;;
+        o)
+            do_build_liboffload=true
+            ;;
+        t)
             do_build_hero_toolchain=true
             ;;
         h)
