@@ -31,10 +31,14 @@ PARBUILD=-j8
 # If not specified, a new one will be created locally.
 export HERO_LINUX_WORKSPACE_DIR=""
 
-# Setup the envioronmental variables
-source scripts/hero-z-7045-env.sh
+update_env() {
+    source scripts/hero-z-7045-env.sh
+}
 
 get_sources() {
+    cd ${HERO_SDK_DIR}
+    update_env
+
     cd ${HERO_TOOLCHAIN_DIR}
     git submodule update --init --recursive
 
@@ -44,13 +48,8 @@ get_sources() {
     cd ${HERO_SUPPORT_DIR}
     git submodule update --init --recursive
 
-    # Binutils sources
     cd ${HERO_OMP_TESTS_DIR}
     git submodule update --init --recursive
-}
-
-update_env() {
-    source scripts/hero-z-7045-env.sh
 }
 
 build_riscv32_toolchain() {
@@ -181,6 +180,9 @@ Libpulp-offload commands
 
 EOF
 }
+
+# Setup the envioronmental variables
+update_env
 
 do_get_sources=false
 do_build_riscv32_toolchain=false
