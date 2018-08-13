@@ -125,7 +125,7 @@ build_hero_toolchain() {
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hAaPpLlOo]
+Usage: ${0##*/} [-hAsrpalot]
 HERO SDK builder
 ----------------------------------------------------
 
@@ -156,12 +156,11 @@ Commands for building individual components
 EOF
 }
 
-# Setup the envioronmental variables
+# Setup the environment variables
 update_env
 
 do_get_sources=false
 do_build_riscv32_toolchain=false
-do_build_arm_toolchain=false
 do_build_pulp_sdk=false
 do_build_arm_toolchain=false
 do_build_linux=false

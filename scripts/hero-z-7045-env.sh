@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 #
-# HERO on ZC706 Envoronment
+# HERO on ZC706 Board
 #
 
 # Host-side platform config
