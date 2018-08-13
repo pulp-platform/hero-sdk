@@ -27,10 +27,6 @@ fi
 # Build configuration
 PARBUILD=-j8
 
-# Specify path to existing zynqlinux workspace.
-# If not specified, a new one will be created locally.
-export HERO_LINUX_WORKSPACE_DIR=""
-
 update_env() {
     source scripts/hero-z-7045-env.sh
 }

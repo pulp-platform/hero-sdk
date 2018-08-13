@@ -36,6 +36,10 @@ if [[ -z "${HERO_SDK_DIR}" ]]; then
 	export HERO_SDK_DIR=`realpath .`
 fi
 
+# Specify path to existing zynqlinux workspace here.
+# If not specified, a new one will be created locally.
+export HERO_LINUX_WORKSPACE_DIR=""
+
 if [[ -z "${HERO_LINUX_WORKSPACE_DIR}" ]]; then
     export HERO_LINUX_WORKSPACE_DIR=${HERO_SDK_DIR}/zynqlinux
 fi
