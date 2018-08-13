@@ -254,12 +254,12 @@ if [ "$do_build_riscv32_toolchain" = true ] ; then
     build_riscv32_toolchain
 fi
 
-if [ "$do_build_arm_toolchain" = true ] ; then
-    build_arm_toolchain
-fi
-
 if [ "$do_build_pulp_sdk" = true ] ; then
     build_pulp_sdk
+fi
+
+if [ "$do_build_arm_toolchain" = true ] ; then
+    build_arm_toolchain
 fi
 
 if [ "$do_build_linux" = true ] ; then
