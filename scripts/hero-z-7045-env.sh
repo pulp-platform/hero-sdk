@@ -40,6 +40,7 @@ fi
 # If not specified, a new one will be created locally.
 export HERO_LINUX_WORKSPACE_DIR=""
 
+# Specify environment variables
 if [[ -z "${HERO_LINUX_WORKSPACE_DIR}" ]]; then
     export HERO_LINUX_WORKSPACE_DIR=${HERO_SDK_DIR}/zynqlinux
 fi
@@ -50,12 +51,6 @@ fi
 
 if [[ -z "${HERO_TOOLCHAIN_DIR}" ]]; then
 	export HERO_TOOLCHAIN_DIR=`realpath pulp-hero-gnu-gcc-toolchain`
-	cd ${HERO_TOOLCHAIN_DIR}
-    if [ -f setup.sh ]; then
-        source setup.sh
-        export PATH=${HERO_GCC_INSTALL_DIR}/bin/:${PATH}
-    fi
-    cd -
 fi
 
 if [[ -z "${HERO_PULP_SDK_DIR}" ]]; then
@@ -68,6 +63,14 @@ fi
 
 if [[ -z "${HERO_OMP_TESTS_DIR}" ]]; then
 	export HERO_OMP_TESTS_DIR=`realpath openmp45-hero-tests`
+fi
+
+# Configure paths, prepare build environments
+if [ -f ${HERO_TOOLCHAIN_DIR}/setup.sh ]; then
+    cd ${HERO_TOOLCHAIN_DIR}
+    source setup.sh
+    export PATH=${HERO_GCC_INSTALL_DIR}/bin/:${PATH}
+    cd -
 fi
 
 if [ -f ${HERO_PULP_SDK_DIR}/sourceme.sh ]; then
