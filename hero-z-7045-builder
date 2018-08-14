@@ -69,6 +69,11 @@ build_riscv32_toolchain() {
 
     cd ${HERO_TOOLCHAIN_DIR}
     ./hero_riscv32_toolchain_builder -dPj
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_riscv32_toolchain failed, aborting now."
+        exit 1
+    fi
 }
 
 build_pulp_sdk() {
@@ -78,6 +83,11 @@ build_pulp_sdk() {
     cd ${HERO_PULP_SDK_DIR}
     source configs/hero-z-7045.sh
     make all env
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_pulp_sdk failed, aborting now."
+        exit 1
+    fi
 }
 
 build_arm_toolchain() {
@@ -89,6 +99,11 @@ build_arm_toolchain() {
 
     cd ${HERO_TOOLCHAIN_DIR}
     ./hero_arm_toolchain_builder -dPj
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_arm_toolchain failed, aborting now."
+        exit 1
+    fi
 }
 
 build_linux() {
@@ -119,6 +134,11 @@ build_linux() {
 
     # Also build modules
     ./compile_modules.sh ${PARBUILD}
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_linux failed, aborting now."
+        exit 1
+    fi
 }
 
 build_liboffload() {
@@ -127,6 +147,11 @@ build_liboffload() {
 
     cd ${HERO_SDK_DIR}/libpulp-offload
     make clean all
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_liboffload failed, aborting now."
+        exit 1
+    fi
 }
 
 build_hero_toolchain() {
@@ -136,6 +161,11 @@ build_hero_toolchain() {
     cd ${HERO_TOOLCHAIN_DIR}
     ./hero_riscv32_toolchain_builder -gj
     ./hero_arm_toolchain_builder -gj
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_hero_toolchain failed, aborting now."
+        exit 1
+    fi
 }
 
 # Usage info
