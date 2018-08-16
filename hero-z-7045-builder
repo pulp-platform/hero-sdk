@@ -112,28 +112,9 @@ build_linux() {
 
     prepare_linux
 
-    # Try to build kernel (might fail because of missing U-Boot mkimage)
-    cd ${HERO_LINUX_KERNEL_DIR}
-    {
-        ./compile_kernel.sh  ${PARBUILD}
-    } || {
-        COMPILE_KERNEL_FAILED=1
-    }
-
-    if [[ ! -z "${COMPILE_KERNEL_FAILED}" ]]; then
-        echo "Linux kernel build failed as expected. I first need to build U-Boot mkimage."
-
-        # Build U-Boot (needed for kernel build)
-        cd ${HERO_LINUX_WORKSPACE_DIR}/u-boot-xlnx
-        ./compile_loader.sh ${PARBUILD}
-
-        # Rebuild kernel
-        cd ${HERO_LINUX_KERNEL_DIR}
-        ./compile_kernel.sh  ${PARBUILD}
-    fi
-
-    # Also build modules
-    ./compile_modules.sh ${PARBUILD}
+    # Build Linux (kernel, root filesystem, boot files, etc.)
+    cd ${HERO_LINUX_WORKSPACE_DIR}
+    ./build.sh
 
     if [ $? -ne 0 ]; then
         echo "ERROR: build_linux failed, aborting now."
@@ -183,7 +164,7 @@ HERO toolchain commands
     > RISCV GCC standalone toolchain
     > PULP SDK
     > ARM GCC standalone toolchain
-    > Linux kernel
+    > Linux
     > libpulp-offload
     > HERO toolchain
 
@@ -195,7 +176,7 @@ Commands for building individual components
   -r : RISCV GCC standalone toolchain
   -p : PULP SDK
   -a : ARM GCC standalone toolchain
-  -l : Linux kernel
+  -l : Linux
   -o : libpulp-offload
   -t : HERO toolchain
 
