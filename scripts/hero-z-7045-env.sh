@@ -17,6 +17,12 @@
 # HERO on ZC706 Board
 #
 
+# HERO target - adjust to your local setup
+export HERO_TARGET_HOST="root@zc706-board"
+export HERO_TARGET_PATH="/root"
+export HERO_TARGET_PATH_DRIVER="${HERO_TARGET_PATH}../drivers"
+export HERO_TARGET_PATH_LIB="${HERO_TARGET_PATH}../libs"
+
 # Host-side platform config
 export PLATFORM="2"
 export BOARD="zc706"
