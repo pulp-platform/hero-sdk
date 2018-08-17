@@ -30,8 +30,7 @@ export BOARD="zc706"
 # Host-side user-space config
 export ARCH="arm"
 export CROSS_COMPILE="arm-linux-gnueabihf-"
-export ARM_LIB_DIR1=`realpath lib`
-export ARM_INC_DIR1=${ARM_LIB_DIR1}/inc
+export HERO_LIBPULP_DIR=`realpath hero-support/libpulp`
 
 # Host-side kernel-space config (1)
 export KERNEL_ARCH=${ARCH}
@@ -80,9 +79,8 @@ if [ -f ${HERO_TOOLCHAIN_DIR}/setup.sh ]; then
 fi
 
 if [ -f ${HERO_PULP_SDK_DIR}/sourceme.sh ]; then
-	export PULP_INC_DIR1=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include/archi/chips/bigpulp
-	export PULP_INC_DIR2=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include
-	source ${HERO_SDK_DIR}/pulp-sdk/sourceme.sh
+	export HERO_PULP_INC_DIR=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include
+	source ${HERO_PULP_SDK_DIR}/sourceme.sh
 fi
 
 # Host-side kernel-space config (2)
