@@ -17,6 +17,15 @@
 # HERO on ZC706 Board
 #
 
+PWD_BKP=`pwd`
+SOURCEME_PATH="$(readlink -e ${BASH_SOURCE[0]})"
+
+# HERO toolchain config
+export HERO_SDK_DIR="$(readlink -e $(dirname $(dirname $SOURCEME_PATH)))"
+
+echo "Configuring HERO SDK at: ${HERO_SDK_DIR}"
+cd ${HERO_SDK_DIR}
+
 # HERO target - adjust to your local setup
 export HERO_TARGET_HOST="root@zc706-board"
 export HERO_TARGET_PATH="/root"
@@ -35,11 +44,6 @@ export HERO_LIBPULP_DIR=`realpath hero-support/libpulp`
 # Host-side kernel-space config (1)
 export KERNEL_ARCH=${ARCH}
 export KERNEL_CROSS_COMPILE=${CROSS_COMPILE}
-
-# HERO toolchain config
-if [[ -z "${HERO_SDK_DIR}" ]]; then
-	export HERO_SDK_DIR=`realpath .`
-fi
 
 # Specify path to existing zynqlinux workspace here.
 # If not specified, a new one will be created locally.
@@ -75,7 +79,7 @@ if [ -f ${HERO_TOOLCHAIN_DIR}/setup.sh ]; then
     cd ${HERO_TOOLCHAIN_DIR}
     source setup.sh
     export PATH=${HERO_GCC_INSTALL_DIR}/bin/:${PATH}
-    cd -
+    cd $OLDPWD
 fi
 
 if [ -f ${HERO_PULP_SDK_DIR}/sourceme.sh ]; then
@@ -85,5 +89,7 @@ fi
 
 # Host-side kernel-space config (2)
 export KERNEL_DIR=${HERO_LINUX_KERNEL_DIR}
+
+cd ${PWD_BKP}
 
 # That's all folks!!
