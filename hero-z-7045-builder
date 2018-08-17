@@ -160,10 +160,21 @@ build_hero_toolchain() {
 
     cd ${HERO_TOOLCHAIN_DIR}
     ./hero_riscv32_toolchain_builder -gj
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_hero_toolchain failed for PULP, aborting now."
+        exit 1
+    fi
+
     ./hero_arm_toolchain_builder -gj
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_hero_toolchain failed for host, aborting now."
+        exit 1
+    fi
+
+    scripts/./install_toolchain.sh
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: build_hero_toolchain failed, aborting now."
+        echo "ERROR: build_hero_toolchain installation failed, aborting now."
         exit 1
     fi
 }
