@@ -94,8 +94,8 @@ TODO
 
 Once you have setup the board you should define the following environmental variables to enable the HERO builder to install the necessary libraries:
 ```
-export PULP_EMU_ADDR=<user_id>@<pulp-hero-ip>
-export PULP_EMU_SHARE_DIR=<installation_dir>
+export HERO_TARGET_HOST=<user_id>@<pulp-hero-ip>
+export HERO_TARGET_PATH=<installation_dir>
 ```
 ## Execute the OpenMP examples
 ### Environmental setup
@@ -103,8 +103,8 @@ The HERO SDK contains also some openMP 4.5 example. Before to run some applicati
 ```
 cd hero-sdk-repacked
 source source scripts/hero-z-7045-env.sh
-export PULP_EMU_ADDR=<user_id>@<pulp-hero-ip>
-export PULP_EMU_SHARE_DIR=<installation_dir>
+export HERO_TARGET_HOST=<user_id>@<pulp-hero-ip>
+export HERO_TARGET_PATH=<installation_dir>
 ```
 
 ### Application Run
