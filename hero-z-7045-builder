@@ -126,6 +126,66 @@ build_offload() {
     cd ${HERO_SDK_DIR}
     update_env
 
+    # Build the Linux kernel-level PULP driver
+    cd ${HERO_SUPPORT_DIR}/drivers/pulp
+    make clean build
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Build of the Linux PULP driver failed, aborting now."
+        exit 1
+    fi
+
+    # Build the PULP offload library
+    cd ${HERO_SUPPORT_DIR}/libpulp
+    make clean build
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Build of the PULP library failed, aborting now."
+        exit 1
+    fi
+
+    # Build the PULP UART reader
+    cd ${HERO_SUPPORT_DIR}/apps/uart
+    make clean build
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Build of the PULP UART reader failed, aborting now."
+        exit 1
+    fi
+}
+
+build_hero_toolchain() {
+    cd ${HERO_SDK_DIR}
+    update_env
+
+    cd ${HERO_TOOLCHAIN_DIR}
+    ./hero_riscv32_toolchain_builder -gj
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_hero_toolchain failed for PULP, aborting now."
+        exit 1
+    fi
+
+    ./hero_arm_toolchain_builder -gj
+    if [ $? -ne 0 ]; then
+        echo "ERROR: build_hero_toolchain failed for host, aborting now."
+        exit 1
+    fi
+}
+
+install() {
+    cd ${HERO_SDK_DIR}
+    update_env
+
+    if [[ -z "${HERO_TARGET_HOST}" ]]; then
+        echo "ERROR: HERO target platform not defined, aborting now."
+    fi
+
+    TARGET=`echo ${HERO_TARGET_HOST} | rev | cut -d@ -f-1 | rev`
+    ping ${TARGET} -c 1 > /dev/null
+    if [ $? -ne 0 ]; then
+        echo "ERROR: HERO target platform not online, aborting now."
+    fi
+
     # Build and install the Linux kernel-level PULP driver
     cd ${HERO_SUPPORT_DIR}/drivers/pulp
     make clean all
@@ -152,29 +212,13 @@ build_offload() {
         echo "ERROR: Build of the PULP UART reader failed, aborting now."
         exit 1
     fi
-}
 
-build_hero_toolchain() {
-    cd ${HERO_SDK_DIR}
-    update_env
-
+    # Install the HERO toolchain
     cd ${HERO_TOOLCHAIN_DIR}
-    ./hero_riscv32_toolchain_builder -gj
-    if [ $? -ne 0 ]; then
-        echo "ERROR: build_hero_toolchain failed for PULP, aborting now."
-        exit 1
-    fi
-
-    ./hero_arm_toolchain_builder -gj
-    if [ $? -ne 0 ]; then
-        echo "ERROR: build_hero_toolchain failed for host, aborting now."
-        exit 1
-    fi
-
     scripts/./install_toolchain.sh
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: build_hero_toolchain installation failed, aborting now."
+        echo "ERROR: HERO toolchain installation failed, aborting now."
         exit 1
     fi
 }
@@ -182,7 +226,7 @@ build_hero_toolchain() {
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hAsrpalot]
+Usage: ${0##*/} [-hAsrpaloti]
 HERO SDK builder
 ----------------------------------------------------
 
@@ -209,6 +253,7 @@ Commands for building individual components
   -l : Linux
   -o : offload framework
   -t : HERO toolchain
+  -i : install
 
 EOF
 }
@@ -223,8 +268,9 @@ do_build_arm_toolchain=false
 do_build_linux=false
 do_build_offload=false
 do_build_hero_toolchain=false
+do_install=false
 
-while getopts hAsrpalot opt; do
+while getopts hAsrpaloti opt; do
     case $opt in
 
         A)
@@ -256,6 +302,9 @@ while getopts hAsrpalot opt; do
             ;;
         t)
             do_build_hero_toolchain=true
+            ;;
+        i)
+            do_install=true
             ;;
         h)
             show_help
@@ -294,6 +343,10 @@ fi
 
 if [ "$do_build_hero_toolchain" = true ] ; then
     build_hero_toolchain
+fi
+
+if [ "$do_install" = true ] ; then
+    install
 fi
 
 # That's all folks!!
