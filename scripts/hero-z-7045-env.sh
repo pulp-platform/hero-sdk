@@ -27,8 +27,10 @@ echo "Configuring HERO SDK at: ${HERO_SDK_DIR}"
 cd ${HERO_SDK_DIR}
 
 # HERO target - adjust to your local setup
-export HERO_TARGET_HOST="root@zc706-board"
-export HERO_TARGET_PATH="/root"
+if [[ -z "${HERO_TARGET_HOST}" ]]; then
+	export HERO_TARGET_HOST="root@zc706-board"
+	export HERO_TARGET_PATH="/root"
+fi
 export HERO_TARGET_PATH_DRIVER="${HERO_TARGET_PATH}/../drivers"
 export HERO_TARGET_PATH_LIB="${HERO_TARGET_PATH}/../libs"
 
