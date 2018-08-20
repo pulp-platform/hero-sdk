@@ -6,7 +6,7 @@
 	url = https://github.com/pulp-platform/pulp-hero-gnu-gcc-toolchain.git
 [submodule "openmp45-hero-tests"]
 	path = openmp45-hero-tests
-	url = https://github.com/alessandrocapotondi/openmp45-hero-tests.git
+	url = git@github.com:pulp-platform/openmp45-hero-tests.git
 [submodule "hero-support"]
 	path = hero-support
 	url = git@iis-git.ee.ethz.ch:pulp-restricted/hsa_support.git
