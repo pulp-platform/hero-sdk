@@ -80,7 +80,6 @@ fi
 if [ -f ${HERO_TOOLCHAIN_DIR}/setup.sh ]; then
     cd ${HERO_TOOLCHAIN_DIR}
     source setup.sh
-    export PATH=${HERO_GCC_INSTALL_DIR}/bin/:${PATH}
     cd $OLDPWD
 fi
 
