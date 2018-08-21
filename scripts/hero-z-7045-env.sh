@@ -53,7 +53,7 @@ export HERO_LINUX_WORKSPACE_DIR=""
 
 # Specify environment variables
 if [[ -z "${HERO_LINUX_WORKSPACE_DIR}" ]]; then
-    export HERO_LINUX_WORKSPACE_DIR=${HERO_SDK_DIR}/zynqlinux
+    export HERO_LINUX_WORKSPACE_DIR=${HERO_SDK_DIR}/linux-workspace
 fi
 
 if [[ -z "${HERO_LINUX_KERNEL_DIR}" ]]; then
