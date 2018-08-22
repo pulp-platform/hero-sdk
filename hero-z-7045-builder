@@ -24,9 +24,6 @@ if [[ ! -f "${0##*/}" ]]; then
     exit 1
 fi
 
-# Build configuration
-PARBUILD=-j`nproc`
-
 update_env() {
     source scripts/hero-z-7045-env.sh
 }
