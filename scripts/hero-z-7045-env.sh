@@ -77,16 +77,17 @@ if [[ -z "${HERO_OMP_TESTS_DIR}" ]]; then
 fi
 
 # Configure paths, prepare build environments
+if [ -f ${HERO_PULP_SDK_DIR}/sourceme.sh ]; then
+    export HERO_PULP_INC_DIR=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include
+    source ${HERO_PULP_SDK_DIR}/sourceme.sh
+fi
+
 if [ -f ${HERO_TOOLCHAIN_DIR}/setup.sh ]; then
     cd ${HERO_TOOLCHAIN_DIR}
     source setup.sh
     cd $OLDPWD
 fi
 
-if [ -f ${HERO_PULP_SDK_DIR}/sourceme.sh ]; then
-	export HERO_PULP_INC_DIR=${HERO_PULP_SDK_DIR}/pkg/sdk/dev/install/include
-	source ${HERO_PULP_SDK_DIR}/sourceme.sh
-fi
 
 # Host-side kernel-space config (2)
 export KERNEL_DIR=${HERO_LINUX_KERNEL_DIR}
