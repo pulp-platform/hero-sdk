@@ -31,8 +31,9 @@ if [[ -z "${HERO_TARGET_HOST}" ]]; then
   export HERO_TARGET_HOST="root@zc706-board"
   export HERO_TARGET_PATH="/root"
 fi
-export HERO_TARGET_PATH_DRIVER="${HERO_TARGET_PATH}/../drivers"
-export HERO_TARGET_PATH_LIB="${HERO_TARGET_PATH}/../libs"
+export HERO_TARGET_PATH_APPS="${HERO_TARGET_PATH}/apps"
+export HERO_TARGET_PATH_DRIVER="${HERO_TARGET_PATH}/drivers"
+export HERO_TARGET_PATH_LIB="${HERO_TARGET_PATH}/libs"
 
 # Host-side platform config
 export PLATFORM="2"
