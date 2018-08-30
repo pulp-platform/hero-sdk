@@ -62,7 +62,7 @@ The HERO SDK contains also some OpenMP 4.5 example applications. Before running 
 
 Setup the build enviroment by executing
 ```
-scripts/./hero-z-7045-env.sh
+source scripts/hero-z-7045-env.sh
 ```
 
 Connect to the board and load the PULP driver:
