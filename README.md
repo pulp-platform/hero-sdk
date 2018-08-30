@@ -56,6 +56,14 @@ to enable the HERO builder to install the driver, support applications and libra
 ```
 to install the files on the board.
 
+By default, the root filesystem comes with pre-generated SSH keys in `/etc/ssh/ssh_host*`. The default root password is
+```
+hero
+```
+and is set at startup by the script `/etc/init.d/S45password`.
+
+**NOTE**: We absolutely recommend to modify the root filestystem to set a custom root password and include your own SSH keys. How this can be done is explained on our [HOWTO webpage](https://iis-people.ee.ethz.ch/~vogelpi/hero/software/host/zynqlinux/). We are not responsible for any vulnerabilities and harm resulting from using the provided unsafe password and SSH keys.
+
 ## Execute the OpenMP examples
 ### Prerequisites
 The HERO SDK contains also some OpenMP 4.5 example applications. Before running an example application, you must have built the HERO SDK, set up the HERO platform and installed the driver, support applications and libraries.
