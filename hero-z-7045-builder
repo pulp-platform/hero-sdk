@@ -78,8 +78,10 @@ build_pulp_sdk() {
     update_env
 
     cd ${HERO_PULP_SDK_DIR}
-    source configs/hero-z-7045.sh
-    make all env
+    source scripts/hero/setup.sh
+
+    #source configs/hero-z-7045.sh
+    #make all env
 
     if [ $? -ne 0 ]; then
         echo "ERROR: build_pulp_sdk failed, aborting now."
