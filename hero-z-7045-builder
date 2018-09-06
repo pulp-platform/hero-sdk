@@ -45,6 +45,7 @@ prepare_linux() {
 
 get_sources() {
     cd ${HERO_SDK_DIR}
+    git submodule update --init
     update_env
 
     cd ${HERO_TOOLCHAIN_DIR}
