@@ -170,6 +170,14 @@ build_hero_toolchain() {
         echo "ERROR: build_hero_toolchain failed for host, aborting now."
         exit 1
     fi
+
+    # Build the HERO target library
+    cd ${HERO_SUPPORT_DIR}/libhero-target
+    make clean header build
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Build of the HERO target library failed, aborting now."
+        exit 1
+    fi
 }
 
 install() {
@@ -219,6 +227,15 @@ install() {
 
     if [ $? -ne 0 ]; then
         echo "ERROR: HERO toolchain installation failed, aborting now."
+        exit 1
+    fi
+
+    # Build and install the HERO target library
+    cd ${HERO_SUPPORT_DIR}/libhero-target
+    make clean all
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Build of the HERO target library failed, aborting now."
         exit 1
     fi
 }
