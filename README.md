@@ -88,7 +88,7 @@ cd ${HERO_TARGET_PATH_APPS}
 ### Application Execution
 To compile and execute an application, navigate to the application folder execute the make:
 ```
-cd openmp45-hero-tests/helloworld
+cd hero-openmp-examples/helloworld
 make clean all run
 ```
 
@@ -103,4 +103,4 @@ export LD_LIBRARY_PATH=${HERO_TARGET_PATH_LIB}
 For additional information on how to build the host Linux system, customize the Buildroot root filesystem (e.g. installing your SSH keys) etc. visit the corresponding [HOWTO webpage](https://iis-people.ee.ethz.ch/~vogelpi/hero/software/host/zynqlinux/).
 
 ## Issues and throubleshooting
-If you find problems or issues during the build process, you can take a look at the troubleshooting [page](FAQ.md) or you can directly open an [issue](https://github.com/pulp-platform/hero-sdk-repacked/issues) in case your problem is not a common one.
+If you find problems or issues during the build process, you can take a look at the troubleshooting [page](FAQ.md) or you can directly open an [issue](https://github.com/pulp-platform/hero-sdk/issues) in case your problem is not a common one.
