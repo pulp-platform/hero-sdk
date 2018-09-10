@@ -1,4 +1,4 @@
-# HERO Software Developement Kit v0.1 (Alpha version)
+# HERO Software Developement Kit
 
 ## About
 The HERO SDK contains the following packages:
