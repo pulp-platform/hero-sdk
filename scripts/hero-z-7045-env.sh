@@ -62,7 +62,7 @@ if [[ -z "${HERO_LINUX_KERNEL_DIR}" ]]; then
 fi
 
 if [[ -z "${HERO_TOOLCHAIN_DIR}" ]]; then
-  export HERO_TOOLCHAIN_DIR=`realpath pulp-hero-gnu-gcc-toolchain`
+  export HERO_TOOLCHAIN_DIR=`realpath hero-gcc-toolchain`
 fi
 
 if [[ -z "${HERO_PULP_SDK_DIR}" ]]; then
@@ -73,8 +73,8 @@ if [[ -z "${HERO_SUPPORT_DIR}" ]]; then
   export HERO_SUPPORT_DIR=`realpath hero-support`
 fi
 
-if [[ -z "${HERO_OMP_TESTS_DIR}" ]]; then
-  export HERO_OMP_TESTS_DIR=`realpath openmp45-hero-tests`
+if [[ -z "${HERO_OMP_EXAMPLES_DIR}" ]]; then
+  export HERO_OMP_EXAMPLES_DIR=`realpath hero-openmp-examples`
 fi
 
 # Configure paths, prepare build environments

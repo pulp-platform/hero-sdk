@@ -57,7 +57,7 @@ get_sources() {
     cd ${HERO_SUPPORT_DIR}
     git submodule update --init --recursive
 
-    cd ${HERO_OMP_TESTS_DIR}
+    cd ${HERO_OMP_EXAMPLES_DIR}
     git submodule update --init --recursive
 }
 
@@ -172,7 +172,7 @@ build_hero_toolchain() {
     fi
 
     # Build the HERO target library
-    cd ${HERO_SUPPORT_DIR}/libhero-target
+    cd ${HERO_SDK_DIR}/libhero-target
     make clean header build
     if [ $? -ne 0 ]; then
         echo "ERROR: Build of the HERO target library failed, aborting now."
@@ -231,7 +231,7 @@ install() {
     fi
 
     # Build and install the HERO target library
-    cd ${HERO_SUPPORT_DIR}/libhero-target
+    cd ${HERO_SDK_DIR}/libhero-target
     make clean all
 
     if [ $? -ne 0 ]; then
