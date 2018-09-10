@@ -6,7 +6,7 @@ The HERO SDK contains the following packages:
 * PULP HERO Linux driver and `libpulp` runtime library for offloading support.
 * Host Linux kernel and Buildroot root file system.
 * PULP SDK ([link](https://github.com/pulp-platform/pulp-sdk));
-* Heterogeneous OpenMP 4.5 example applications.
+* HERO Examples using OpenMP Heterogeneous Accelerator Execution Model.
 
 ### Prerequisites (on Ubuntu 16.04)
 Starting from a fresh Ubuntu 16.04 distribution, here are the commands to be executed to get all required dependencies:
@@ -17,11 +17,11 @@ Starting from a fresh Ubuntu 16.04 distribution, here are the commands to be exe
 ### Checkout the HERO SDK sources
 The HERO SDK uses GIT submodule. To checkout properly the sources you have to execute the following command:
 ```
-git clone --recursive git@github.com:pulp-platform/hero-sdk-repacked.git
+git clone --recursive git@github.com:pulp-platform/hero-sdk.git
 ```
 or if you use HTTPS
 ```
-git clone --recursive https://github.com/pulp-platform/hero-sdk-repacked.git
+git clone --recursive https://github.com/pulp-platform/hero-sdk.git
 ```
 
 ## Build the HERO SDK
