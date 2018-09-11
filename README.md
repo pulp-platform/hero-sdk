@@ -10,10 +10,10 @@ The HERO SDK contains the following packages:
 
 ### Prerequisites (on Ubuntu 16.04)
 Starting from a fresh Ubuntu 16.04 distribution, here are the commands to be executed to get all required dependencies:
-
-    sudo apt install build-essential bison flex git python3-pip gawk texinfo libgmp-dev libmpfr-dev libmpc-dev swig3.0 libjpeg-dev lsb-core doxygen python-sphinx sox graphicsmagick-libmagick-dev-compat libsdl2-dev libswitch-perl libftdi1-dev u-boot-tools fakeroot
-    sudo pip3 install artifactory twisted prettytable sqlalchemy pyelftools openpyxl xlsxwriter pyyaml numpy
-
+```
+sudo apt install build-essential bison flex git python3-pip gawk texinfo libgmp-dev libmpfr-dev libmpc-dev swig3.0 libjpeg-dev lsb-core doxygen python-sphinx sox graphicsmagick-libmagick-dev-compat libsdl2-dev libswitch-perl libftdi1-dev u-boot-tools fakeroot
+sudo pip3 install artifactory twisted prettytable sqlalchemy pyelftools openpyxl xlsxwriter pyyaml numpy
+```
 ### Checkout the HERO SDK sources
 The HERO SDK uses GIT submodule. To checkout properly the sources you have to execute the following command:
 ```
@@ -38,19 +38,66 @@ The first build takes at least 1 hour (depending on your internet connection). T
 ```
 to list the available build commands. Note that some modules have dependencies and require to be built in order. The above command displays the various modules in the correct build order.
 
-###  Setup of the HERO platform
-Once you have built the host Linux system, you can set up operation of the HERO platform. To this end, copy the contents of the directory
+##  Setup of the HERO platform
+Once you have built the host Linux system, you can set up operation of the HERO platform.
+
+### Format SD card
+
+To properly format your SD card, insert it to your computer and type `dmesg` to find out the device number of the SD card.
+In the following, it is referred to as `/dev/sdX`.
+
+**NOTE**: Executing the following commands on a wrong device number will corrupt the data on your workstation. You need root priviledges to format the SD card.
+
+First of all, type
+```
+sudo dd if=/dev/zero of=/dev/sdX bs=1024 count=1
+```
+to erase the partition table of the SD card.
+
+Next, start `fdisk` usign
+```
+sudo fdisk /dev/sdX
+```
+and then type `n` followed by `p` and `1` to create a new primary partition.
+Type `1` followed by `1G` to define the first and last cyclinder, respectively.
+Then, type `n` followed by `p` and `2` to create a second primary partition.
+Select the first and last cyclinder of this partition to use the rest of the SD card.
+Type `p` to list the newly created partitions and to get their device nodes, e.g., `/dev/sdX1`.
+To write the partition table to the SD card and exit `fdisk`, type `w`.
+
+Next, execute
+```
+sudo mkfs -t vfat -n ZYNQ_BOOT /dev/sdX1
+sudo mkfs -t vfat -n STORAGE   /dev/sdX2
+```
+to create a new FAT filesystem on both partitions.
+
+### Load boot images to SD card
+
+To install the generated images, copy the contents of the directory
 ```
 zynqlinux/sd_image
 ```
-to a bootable SD card, insert the SD card into the board and boot it.
+to the first partition of the prepared SD card.
+You can do so by executing
+```
+./copy_to_sd_card.sh
+```
+**NOTE**: By default, this script expects the SD card partition to be mounted at `/run/media/${USER}/ZYNQ_BOOT` but you can specify a custom SD card mount point by setting up the env variable `SD_BOOT_PARTITION`. 
+
+Insert the SD card into the board and make sure the board boots from the SD card.
+To this end, the [boot mode switch](http://www.wiki.xilinx.com/Prepare%20Boot%20Medium) of the Zynq must be set to `00110`.
+Connect the board to your network.
+Boot the board.
+
+### Install support files
 
 Once you have setup the board you can define the following environmental variables (e.g. in `scripts/hero-z-7045-env.sh`)
 ```
 export HERO_TARGET_HOST=<user_id>@<hero-target-ip>
 export HERO_TARGET_PATH=<installation_dir>
 ```
-to enable the HERO builder to install the driver, support applications and libraries. Then, execute
+to enable the HERO builder to install the driver, support applications and libraries using a network connection. Then, execute
 ```
 ./hero-z-7045-builder -i
 ```

@@ -1,13 +1,16 @@
 [submodule "pulp-sdk"]
 	path = pulp-sdk
 	url = https://github.com/pulp-platform/pulp-sdk.git
-[submodule "pulp-hero-gnu-gcc-toolchain"]
-	path = pulp-hero-gnu-gcc-toolchain
-	url = https://github.com/pulp-platform/pulp-hero-gnu-gcc-toolchain.git
-[submodule "openmp45-hero-tests"]
-	path = openmp45-hero-tests
-	url = git@github.com:pulp-platform/openmp45-hero-tests.git
 [submodule "hero-support"]
 	path = hero-support
 	url = git@iis-git.ee.ethz.ch:pulp-restricted/hsa_support.git
 	branch = release
+[submodule "hero-openmp-examples"]
+	path = hero-openmp-examples
+	url = https://github.com/pulp-platform/hero-openmp-examples.git
+[submodule "libhero-target"]
+	path = libhero-target
+	url = https://github.com/pulp-platform/libhero-target.git
+[submodule "hero-gcc-toolchain"]
+	path = hero-gcc-toolchain
+	url = https://github.com/pulp-platform/hero-gcc-toolchain.git
