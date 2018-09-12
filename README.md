@@ -30,7 +30,7 @@ sudo pip3 install artifactory twisted prettytable sqlalchemy pyelftools openpyxl
 ```
 
 ## Get the HERO SDK sources
-The HERO SDK uses GIT submodules. Thus, to have to clone it recursively:
+The HERO SDK uses GIT submodules. Thus, you have to clone it recursively:
 ```
 git clone --recursive git@github.com:pulp-platform/hero-sdk.git
 ```
