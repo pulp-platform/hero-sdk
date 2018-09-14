@@ -25,7 +25,14 @@ if [[ ! -f "${0##*/}" ]]; then
 fi
 
 update_env() {
+    git submodule update --init
     source scripts/hero-z-7045-env.sh
+
+    cd ${HERO_SUPPORT_DIR}
+    git submodule update --init --recursive
+
+    cd ${HERO_OMP_EXAMPLES_DIR}
+    git submodule update --init --recursive    
 }
 
 prepare_linux() {
@@ -45,25 +52,28 @@ prepare_linux() {
 
 get_sources() {
     cd ${HERO_SDK_DIR}
-    git submodule update --init
+    update_env
+}
+
+get_artifacts() {
+    cd ${HERO_SDK_DIR}
     update_env
 
+    cd ${HERO_SDK_DIR}
+    source scripts/hero-artifacts.sh
+    wget ${HERO_GITHUB_BASE_URL}/${HERO_TOOLCHAIN_GITHUB_ARTIFACT_NAME}/releases/download/${HERO_TOOLCHAIN_GITHUB_ARTIFACT_VERSION}/${HERO_TOOLCHAIN_GITHUB_ARTIFACT_NAME}-${HERO_TOOLCHAIN_GITHUB_ARTIFACT_VERSION}.zip -P ${HERO_TOOLCHAIN_DIR}
+
     cd ${HERO_TOOLCHAIN_DIR}
-    git submodule update --init --recursive
-
-    cd ${HERO_PULP_SDK_DIR}
-    git submodule update --init --recursive
-
-    cd ${HERO_SUPPORT_DIR}
-    git submodule update --init --recursive
-
-    cd ${HERO_OMP_EXAMPLES_DIR}
-    git submodule update --init --recursive
+    unzip -o ${HERO_TOOLCHAIN_GITHUB_ARTIFACT_NAME}-${HERO_TOOLCHAIN_GITHUB_ARTIFACT_VERSION}.zip
+    rm -rf ${HERO_TOOLCHAIN_GITHUB_ARTIFACT_NAME}-${HERO_TOOLCHAIN_GITHUB_ARTIFACT_VERSION}.zip
 }
 
 build_riscv32_toolchain() {
     cd ${HERO_SDK_DIR}
     update_env
+
+    cd ${HERO_TOOLCHAIN_DIR}
+    git submodule update --init --recursive
 
     cd ${HERO_TOOLCHAIN_DIR}
     ./hero_riscv32_toolchain_builder -dPj
@@ -79,6 +89,9 @@ build_pulp_sdk() {
     update_env
 
     cd ${HERO_PULP_SDK_DIR}
+    git submodule update --init --recursive
+
+    cd ${HERO_PULP_SDK_DIR}
     source scripts/hero/setup.sh
     make all env
     
@@ -91,6 +104,9 @@ build_pulp_sdk() {
 build_arm_toolchain() {
     cd ${HERO_SDK_DIR}
     update_env
+
+    cd ${HERO_TOOLCHAIN_DIR}
+    git submodule update --init --recursive
 
     # requires Linux kernel headers
     prepare_linux
@@ -155,6 +171,9 @@ build_offload() {
 build_hero_toolchain() {
     cd ${HERO_SDK_DIR}
     update_env
+
+    cd ${HERO_TOOLCHAIN_DIR}
+    git submodule update --init --recursive
 
     cd ${HERO_TOOLCHAIN_DIR}
     ./hero_riscv32_toolchain_builder -gj
@@ -257,11 +276,18 @@ HERO toolchain commands
     > offload framework
     > HERO toolchain
 
+  -R : get released HERO toolchain and build only the dependecies:
+    > get sources and HERO artifacts
+    > PULP SDK
+    > Linux
+    > offload framework
+
 
 Commands for building individual components
 ----------------------------------------------------
 
   -s : get sources
+  -b : get artifacts
   -r : RISCV GCC standalone toolchain
   -p : PULP SDK
   -a : ARM GCC standalone toolchain
@@ -277,6 +303,7 @@ EOF
 update_env
 
 do_get_sources=false
+do_get_artifacts=false
 do_build_riscv32_toolchain=false
 do_build_pulp_sdk=false
 do_build_arm_toolchain=false
@@ -285,7 +312,7 @@ do_build_offload=false
 do_build_hero_toolchain=false
 do_install=false
 
-while getopts hAsrpaloti opt; do
+while getopts hARsbrpaloti opt; do
     case $opt in
 
         A)
@@ -296,6 +323,16 @@ while getopts hAsrpaloti opt; do
             do_build_linux=true
             do_build_offload=true
             do_build_hero_toolchain=true
+            ;;
+        R)
+            do_get_sources=true
+            do_get_artifacts=true
+            do_build_pulp_sdk=true
+            do_build_linux=true
+            do_build_offload=true
+            ;;
+        b)
+            do_get_artifacts=true
             ;;
         s)
             do_get_sources=true
@@ -334,6 +371,10 @@ done
 
 if [ "$do_get_sources" = true ] ; then
     get_sources
+fi
+
+if [ "$do_get_artifacts" = true ] ; then
+    get_artifacts
 fi
 
 if [ "$do_build_riscv32_toolchain" = true ] ; then
