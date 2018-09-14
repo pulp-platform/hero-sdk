@@ -127,7 +127,7 @@ hero
 ```
 and is set at startup by the script `/etc/init.d/S45password`.
 
-**NOTE**: We absolutely recommend to modify the root filesystem to set a custom root password and include your own SSH keys. How this can be done is explained on our [HOWTO webpage](https://iis-people.ee.ethz.ch/~vogelpi/hero/software/host/zynqlinux/). We are not responsible for any vulnerabilities and harm resulting from using the provided unsafe password and SSH keys.
+**NOTE**: We absolutely recommend to modify the root filesystem to set a custom root password and include your own SSH keys. How this can be done is explained on our [HOWTO webpage][Zynqlinux HowTo]. We are not responsible for any vulnerabilities and harm resulting from using the provided unsafe password and SSH keys.
 
 ## Execute OpenMP Examples
 ### Environmental Setup
@@ -165,7 +165,7 @@ export LD_LIBRARY_PATH=${HERO_TARGET_PATH_LIB}
 ```
 
 # Additional information
-For additional information on how to build the host Linux system, customize the Buildroot root filesystem (e.g. installing your SSH keys) etc. visit the corresponding [HOWTO webpage](https://iis-people.ee.ethz.ch/~vogelpi/hero/software/host/zynqlinux/).
+For additional information on how to build the host Linux system, customize the Buildroot root filesystem (e.g. installing your SSH keys) etc. visit the corresponding [HOWTO webpage][Zynqlinux HowTo].
 
 # Issues and troubleshooting
 If you find problems or issues during the build process, you can take a look at the troubleshooting [page](FAQ.md) or you can directly open an [issue](https://github.com/pulp-platform/hero-sdk/issues) in case your problem is not a common one.
@@ -175,3 +175,5 @@ If you find problems or issues during the build process, you can take a look at 
 2. [Rossi, Davide, et al. "PULP: A parallel ultra low power platform for next generation IoT applications." _Hot Chips 27 Symposium (HCS), 2015 IEEE._ IEEE, 2015](https://ieeexplore.ieee.org/document/7477325/)
 3. [Vogel, Pirmin, Andrea Marongiu, and Luca Benini. "Lightweight virtual memory support for zero-copy sharing of pointer-rich data structures in heterogeneous embedded SoCs." _IEEE Transactions on Parallel and Distributed Systems 28.7 (2017): 1947-1959._ IEEE, (2017)](https://ieeexplore.ieee.org/document/7797491/)
 4. [Capotondi, Alessandro, and Andrea Marongiu. "Enabling zero-copy OpenMP offloading on the PULP many-core accelerator." _Proceedings of the 20th International Workshop on Software and Compilers for Embedded Systems._ ACM, 2017.](https://dl.acm.org/citation.cfm?id=3079071)
+
+[Zynqlinux HowTo]: https://pulp-platform.org/hero/doc/software/host/zynqlinux/
