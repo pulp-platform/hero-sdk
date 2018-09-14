@@ -97,7 +97,7 @@ You can do so by executing
 ```
 ./copy_to_sd_card.sh
 ```
-**NOTE**: By default, this script expects the SD card partition to be mounted at `/run/media/${USER}/ZYNQ_BOOT` but you can specify a custom SD card mount point by setting up the env variable `SD_BOOT_PARTITION`. 
+**NOTE**: By default, this script expects the SD card partition to be mounted at `/run/media/${USER}/ZYNQ_BOOT` but you can specify a custom SD card mount point by setting up the env variable `SD_BOOT_PARTITION`.
 
 Insert the SD card into the board and make sure the board boots from the SD card.
 To this end, the [boot mode switch](http://www.wiki.xilinx.com/Prepare%20Boot%20Medium) of the Zynq must be set to `00110`.
