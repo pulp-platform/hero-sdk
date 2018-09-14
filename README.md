@@ -82,9 +82,13 @@ To write the partition table to the SD card and exit `fdisk`, type `w`.
 Next, execute
 ```
 sudo mkfs -t vfat -n ZYNQ_BOOT /dev/sdX1
-sudo mkfs -t vfat -n STORAGE   /dev/sdX2
 ```
-to create a new FAT filesystem on both partitions.
+to create a new FAT filesystem for the boot partition, and
+```
+sudo mkfs -t ext2 -L STORAGE /dev/sdX2
+```
+to create an ext2 filesystem for storage.  (Do not use FAT for storage because it does not support
+symlinks, which are needed to correctly install libraries.)
 
 ### Load boot images to SD card
 
