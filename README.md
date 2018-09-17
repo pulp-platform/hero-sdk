@@ -1,19 +1,19 @@
 # HERO Software Development Kit
-**HERO** \[[1](https://arxiv.org/abs/1712.06497)\] combines a **PULP-based** \[[2](https://ieeexplore.ieee.org/document/7477325/)\] open-source parallel manycore accelerator implemented on FPGA with a hard ARM Cortex-A multicore host processor running full-stack Linux. HERO is the **first heterogeneous system architecture** that combines a powerful ARM multicore host with a highly parallel and scalable many-core accelerator based on a **RISC-V cores**.
-HERO offers a **complete open-source hardware and software ecosystem** which enables state-of-the-art, transparent accelerator programming based on the **OpenMP v4.5 Accelerator Execution Model**. The programmer can write a single application source file for the host and use OpenMP directives for parallelization and accelerator offloading. Lower-level details such as different ISAs as well as **Shared Virtual Memory (SVM)** \[[3](https://ieeexplore.ieee.org/document/7797491/)\] between host and accelerator are handled by the provided GCC-7 toolchain \[[4](https://dl.acm.org/citation.cfm?id=3079071)\], runtime libraries, kernel driver and the hardware IPs.
+**HERO** \[[1](https://arxiv.org/abs/1712.06497)\] combines a **PULP-based** \[[2](https://ieeexplore.ieee.org/document/7477325/)\] open-source parallel manycore accelerator implemented on FPGA with a hard ARM Cortex-A multicore host processor running full-stack Linux. HERO is the **first heterogeneous system architecture** that combines a powerful ARM multicore host with a highly parallel and scalable manycore accelerator based on a **RISC-V cores**.
+HERO offers a **complete hardware and software platform** which advances the state of the art of transparent accelerator programming using the **OpenMP v4.5 Accelerator Model**. The programmer can write a single application source file for the host and use OpenMP directives for parallelization and accelerator offloading. Lower-level details such as differing ISAs as well as **shared virtual memory (SVM)** \[[3](https://ieeexplore.ieee.org/document/7797491/)\] between host and accelerator are handled by our heterogeneous toolchain based on GCC 7 \[[4](https://dl.acm.org/citation.cfm?id=3079071)\], runtime libraries, kernel driver and our open-source hardware IPs.
 
 ## Contents
-In the HERO SDK you can find the following modules:
-* `hero-gcc-toolchain`: HERO GCC-7 Toolchain sources with RISC-V offloading support through OpenMP 4.5.
-* `hero-support`: `bigPULP` accelerator Linux driver, user-space runtime library for HERO, and Linux host ecosystem based on `buildroot`.
-* `hero-openmp-examples`: HERO Examples using the OpenMP Heterogeneous Accelerator Execution Model
-* `libhero-target`: HERO hardware specific APIs accessible through OpenMP
-* `pulp-sdk`: `bigPULP`accelerator firmware for HERO (more info [here](https://github.com/pulp-platform/pulp-sdk))
+The HERO software development kit (SDK) contains the following submodules:
+* `hero-gcc-toolchain`: heterogeneous toolchain based on GCC 7 with RISC-V offloading support through OpenMP 4.5.
+* `hero-support`: accelerator kernel driver and user-space runtime library, host Linux system based on Buildroot.
+* `hero-openmp-examples`: HERO application examples using the OpenMP Accelerator Model.
+* `libhero-target`: HERO hardware-specific APIs accessible through OpenMP.
+* `pulp-sdk`: accelerator SDK (more info [here](https://github.com/pulp-platform/pulp-sdk))
 
 # Getting Started
 ## Prerequisites
 ### Hardware
-HERO SDK — at the moment — officially supports only the [Xilinx Zynq ZC706](https://www.xilinx.com/products/boards-and-kits/ek-z7-zc706-g.html) as target hardware platform.
+The HERO SDK currently supports the [Xilinx Zynq ZC706 Evaluation Kit](https://www.xilinx.com/products/boards-and-kits/ek-z7-zc706-g.html) as target hardware platform.
 
 ### Software
 #### Ubuntu 16.04
@@ -40,7 +40,7 @@ git clone --recursive https://github.com/pulp-platform/hero-sdk.git
 ```
 
 ## Build the HERO SDK from the sources
-The build is automatically managed by various scripts. The main builder script is `hero-z-7045-builder`.
+The build is automatically managed by various scripts. The main build script is `hero-z-7045-builder`.
 You can build everything by launching the following command:
 ```
 ./hero-z-7045-builder -A
@@ -94,11 +94,12 @@ symlinks, which are needed to correctly install libraries.)
 
 To install the generated images, copy the contents of the directory
 ```
-zynqlinux/sd_image
+linux-workspace/sd_image
 ```
 to the first partition of the prepared SD card.
-You can do so by executing
+You can do so by changing to this directory and executing the provided script
 ```
+cd linux-workspace/sd_image
 ./copy_to_sd_card.sh
 ```
 **NOTE**: By default, this script expects the SD card partition to be mounted at `/run/media/${USER}/ZYNQ_BOOT` but you can specify a custom SD card mount point by setting up the env variable `SD_BOOT_PARTITION`.
@@ -110,7 +111,7 @@ Boot the board.
 
 ### Install HERO SDK support files
 
-Once you have setup the board you can define the following environmental variables (e.g. in `scripts/hero-z-7045-env.sh`)
+Once you have set up the board you can define the following environmental variables (e.g. in `scripts/hero-z-7045-env.sh`)
 ```
 export HERO_TARGET_HOST=<user_id>@<hero-target-ip>
 export HERO_TARGET_PATH=<installation_dir>
@@ -151,7 +152,7 @@ cd ${HERO_TARGET_PATH_APPS}
 ```
 
 ### Application Execution
-To compile and execute an application, navigate to the application folder execute the make:
+To compile and execute an application, navigate to the application folder and execute make:
 ```
 cd hero-openmp-examples/helloworld
 make clean all run
@@ -161,7 +162,7 @@ Alternatively, you can also directly connect to the board via SSH, and execute t
 ```
 cd ${HERO_TARGET_PATH_APPS}
 export LD_LIBRARY_PATH=${HERO_TARGET_PATH_LIB}
-./app.exe
+./helloworld
 ```
 
 # Additional information
