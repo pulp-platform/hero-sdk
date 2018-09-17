@@ -94,11 +94,12 @@ symlinks, which are needed to correctly install libraries.)
 
 To install the generated images, copy the contents of the directory
 ```
-zynqlinux/sd_image
+linux-workspace/sd_image
 ```
 to the first partition of the prepared SD card.
-You can do so by executing
+You can do so by changing to this directory and executing the provided script
 ```
+cd linux-workspace/sd_image
 ./copy_to_sd_card.sh
 ```
 **NOTE**: By default, this script expects the SD card partition to be mounted at `/run/media/${USER}/ZYNQ_BOOT` but you can specify a custom SD card mount point by setting up the env variable `SD_BOOT_PARTITION`.
