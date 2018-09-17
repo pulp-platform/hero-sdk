@@ -41,3 +41,26 @@ ssh $HERO_TARGET_HOST
 cd ${HERO_TARGET_PATH_APPS}
 ./uart
 ```
+
+# ERROR: Failed to map page for VA 0x00000000...
+## Symptoms
+When you try to execute an application on the HERO board, the accelerator prints one or multiple error messages like
+
+```
+[RT(0,7)] ERROR: get_page_phys_addr: 0x1003fde4 is not a valid page address!
+[RT(0,7)] ERROR: Failed to read PTE[0] with errno 22!
+[RT(0,7)] ERROR: Failed to find the page physical address for VA 0x00000000 with errno 22!
+[RT(0,7)] ERROR: Failed to map page for VA 0x00000000 for core (0,0) with errno 22!
+```
+and the execution possibly does not terminate.
+
+## Diagnosis
+Your accelerator kernel tries to access the address 0x00000000 in shared virtual memory.
+The helper thread managing the IOMMU inside the accelerator cannot find the corresponding physical address as this virtual address is invalid.
+Most likely, your kernel tries to dereference a virtual address pointer passed from the host without _tryread_ protection (before accesssing address 0x00000000).
+The read request creates a TLB miss and the IOMMU returns 0 and signals the TLB miss in a side-band signal.
+Since the access is not protected with a _tryread_, this signal is ignored and the kernel tries to read at address 0x00000000, which creates the error messages.
+
+## Solution
+Accesses of the accelerator to shared virtual memory must be protected by _tryread_ function calls.
+Check our [HOWTO page](https://pulp-platform.org/hero/doc/software/programming/svm/) to find out more about to do this.
