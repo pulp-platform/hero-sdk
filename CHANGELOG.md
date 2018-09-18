@@ -15,8 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/), and this 
 
 ### Changed
 - Update `hero-gcc-toolchain` to v1.0.0.
-- Update `hero-openmp-examples` to v1.0.1, fixing an include guard and directory creation during
-  application deployment.
+- Update `hero-openmp-examples` to v1.1.0, adding the Sobel filter OpenMP example application and
+  fixing an include guard and directory creation during application deployment.
 - Update `hero-support` to v1.0.0, the initial release for the ZC706.
 - Update `libhero-target` to v1.0.1, adding API documentation.
 
