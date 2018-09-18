@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/), and this 
 
 ### Fixed
 - ReadMe: Correct instructions and statements, fix some typos.
+- Update `pulp-sdk` to fix issue #28.
 
 ### Changed
 - Update `hero-gcc-toolchain` to v1.0.0.
