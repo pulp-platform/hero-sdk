@@ -80,7 +80,6 @@ build_pulp_sdk() {
 
     cd ${HERO_PULP_SDK_DIR}
     source scripts/hero/setup.sh
-    make all env
     
     if [ $? -ne 0 ]; then
         echo "ERROR: build_pulp_sdk failed, aborting now."

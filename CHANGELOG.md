@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](http://semver.org).
 
+## v1.0.2 - 2018-09-19
+
+### Fixed
+- Update `pulp-sdk` to `hero-v1.0.1` (additional fix for #28)
+- Update hero-z-7045-builder. Removed `make all env` from `pulp-sdk` (additional fix for #28)
+
 ## v1.0.1 - 2018-09-18
 
 ### Added
@@ -12,7 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/), and this 
 
 ### Fixed
 - ReadMe: Correct instructions and statements, fix some typos.
-- Update `pulp-sdk` to fix issue #28.
+- Update `pulp-sdk` to fix issue #28 (partial fix).
 
 ### Changed
 - Update `hero-gcc-toolchain` to v1.0.0.
