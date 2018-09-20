@@ -40,12 +40,55 @@ before_install:
   - git submodule update --init --recursive
 
 stages:
-  - setup
+  - setup-source
+  - setup-riscv-gcc
+  - setup-pulp-sdk
+  - setup-arm-gcc
+  - setup-linux
+  - setup-offload
+  - setup-hero-toolchain
+  - install
   #- test
 
 jobs:
   include:
-    - stage: setup
-      name: run builder
+
+    - stage: setup-source
+      name: get sources
       script:
-        - .ci/travis-exec-log ./hero-z-7045-builder -A
+        - .ci/travis-exec-log ./hero-z-7045-builder -s
+
+    - stage: setup-riscv-gcc
+      name: build RISC-V GCC
+      script:
+        - .ci/travis-exec-log ./hero-z-7045-builder -r
+
+    - stage: setup-pulp-sdk
+      name: build PULP SDK
+      script:
+        - .ci/travis-exec-log ./hero-z-7045-builder -p
+
+    - stage: setup-arm-gcc
+      name: build ARM GCC
+      script:
+        - .ci/travis-exec-log ./hero-z-7045-builder -a
+
+    - stage: setup-arm-gcc
+      name: build Linux
+      script:
+        - .ci/travis-exec-log ./hero-z-7045-builder -a
+
+    - stage: setup-offload
+      name: build offload framework
+      script:
+        - .ci/travis-exec-log ./hero-z-7045-builder -o
+
+    - stage: setup-hero-toolchain
+      name: build HERO toolchain
+      script:
+        - .ci/travis-exec-log ./hero-z-7045-builder -t
+
+    - stage: install
+      name: install HERO toolchain
+      script:
+        - .ci/travis-exec-log ./hero-z-7045-builder -i
