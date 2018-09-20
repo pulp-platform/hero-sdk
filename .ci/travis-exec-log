@@ -10,10 +10,10 @@ printf "Executing '$cmd $@' and logging to '$logfile' "
 (echo "$cmd $@ > $logfile 2>&1" | sh) &
 child_pid="$!"
 
+child_status=0
 while true; do
     printf '.'
     if [ ! -e /proc/$child_pid ]; then
-        child_status=0
         wait $child_pid || child_status=$?
         if [ "$child_status" -ne "0" ]; then
             echo " failed with code $child_status."
@@ -26,3 +26,4 @@ while true; do
     fi
     sleep 1
 done
+exit $child_status
