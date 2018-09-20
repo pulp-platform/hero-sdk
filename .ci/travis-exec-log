@@ -5,13 +5,24 @@ N_PRINT_LINES=1000
 cmd="$1"
 logfile="$cmd-$(date --iso-8601=seconds).log"
 shift
-echo "Executing '$cmd $@' and logging to '$logfile'."
-$cmd "$@" > "$logfile" 2>&1
-status=$?
-if [ "$status" -ne "0" ]; then
-    echo "Error: '$cmd $@' failed with code $status."
-    echo "Printing the last $N_PRINT_LINES lines of the log:"
-    tail -n $N_PRINT_LINES "$logfile"
-else
-    echo "'$cmd $@' succeeded."
-fi
+printf "Executing '$cmd $@' and logging to '$logfile' "
+
+(echo "$cmd $@ > $logfile 2>&1" | sh) &
+child_pid="$!"
+
+while true; do
+    printf '.'
+    if [ ! -e /proc/$child_pid ]; then
+        child_status=0
+        wait $child_pid || child_status=$?
+        if [ "$child_status" -ne "0" ]; then
+            echo " failed with code $child_status."
+            echo "Printing the last $N_PRINT_LINES lines of the log:"
+            tail -n $N_PRINT_LINES "$logfile"
+        else
+            echo " succeeded."
+        fi
+        break
+    fi
+    sleep 1
+done
