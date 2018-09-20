@@ -46,9 +46,7 @@ before_install:
   - pip install --user awscli
   - aws configure set aws_access_key_id $AWS_ACCESS_KEY
   - aws configure set aws_secret_access_key $AWS_SECRET_KEY
-  - mkdir -p ~/$TRAVIS_BUILD_NUMBER
-  - aws s3 sync s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER ~/$TRAVIS_BUILD_NUMBER
-  - cd ~/$TRAVIS_BUILD_NUMBER
+  - aws s3 sync s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER $TRAVIS_BUILD_DIR
 
 stages:
   - setup-source
@@ -108,4 +106,4 @@ jobs:
         - aws s3 rm --recursive s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER
 
 after_succes:
-  - aws s3 sync ~/$TRAVIS_BUILD_NUMBER s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER
+  - aws s3 sync $TRAVIS_BUILD_DIR s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER
