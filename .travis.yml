@@ -30,7 +30,6 @@ addons:
       - cmake
       - u-boot-tools
       - fakeroot
-      - realpath
 
 branches:
   only:
