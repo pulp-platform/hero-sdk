@@ -2,6 +2,8 @@ language: c
 sudo: false
 cache:
   apt: true
+git:
+  submodules: false # We manually initialize submodules in the 'get sources' job.
 
 env:
   global:
