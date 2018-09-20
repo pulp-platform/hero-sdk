@@ -3,7 +3,7 @@
 N_PRINT_LINES=1000
 
 cmd="$1"
-logfile="$cmd-$(date --iso-8601).log"
+logfile="$cmd-$(date --iso-8601=seconds).log"
 shift
 echo "Executing '$cmd $@' and logging to '$logfile'."
 $cmd "$@" > "$logfile" 2>&1
