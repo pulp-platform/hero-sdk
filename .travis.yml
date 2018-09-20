@@ -3,6 +3,10 @@ sudo: false
 cache:
   apt: true
 
+env:
+  global:
+    - PATH=$HOME/.local/bin:$PATH
+
 # required packages to install
 addons:
   apt:
@@ -37,7 +41,12 @@ branches:
   - travis
 
 before_install:
-  - git submodule update --init --recursive
+  - pip install --user awscli
+  - aws configure set aws_access_key_id $AWS_ACCESS_KEY
+  - aws configure set aws_secret_access_key $AWS_SECRET_KEY
+  - mkdir -p ~/$TRAVIS_BUILD_NUMBER
+  - aws s3 sync s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER ~/$TRAVIS_BUILD_NUMBER
+  - cd ~/$TRAVIS_BUILD_NUMBER
 
 stages:
   - setup-source
@@ -56,6 +65,7 @@ jobs:
     - stage: setup-source
       name: get sources
       script:
+        - git submodule update --init --recursive
         - .ci/travis-exec-log ./hero-z-7045-builder -s
 
     - stage: setup-riscv-gcc
@@ -92,3 +102,8 @@ jobs:
       name: install HERO toolchain
       script:
         - .ci/travis-exec-log ./hero-z-7045-builder -i
+      after_success:
+        - aws s3 rm --recursive s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER
+
+after_succes:
+  - aws s3 sync ~/$TRAVIS_BUILD_NUMBER s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER
