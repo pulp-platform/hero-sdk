@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+N_PRINT_LINES=1000
+
+cmd="$1"
+logfile="$cmd-$(date --iso-8601).log"
+shift
+echo "Executing '$cmd $@' and logging to '$logfile'."
+$cmd "$@" > "$logfile"
+status=$?
+if [ "$status" -ne "0" ]; then
+    echo "Error: '$cmd $@' failed with code $status."
+    echo "Printing the last $N_PRINT_LINES lines of the log:"
+    tail -n $N_PRINT_LINES "$logfile"
+else
+    echo "'$cmd $@' succeeded."
+fi

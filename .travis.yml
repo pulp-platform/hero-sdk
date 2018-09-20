@@ -48,4 +48,4 @@ jobs:
     - stage: setup
       name: run builder
       script:
-        - ./hero-z-7045-builder -A
+        - .ci/travis-exec-log ./hero-z-7045-builder -A
