@@ -26,7 +26,7 @@ addons:
       - graphicsmagick-libmagick-dev-compat
       - libsdl2-dev
       - libswitch-perl
-      - libftdi1-dev
+      - libftdi-dev
       - cmake
       - u-boot-tools
       - fakeroot
