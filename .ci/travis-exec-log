@@ -6,7 +6,7 @@ cmd="$1"
 logfile="$cmd-$(date --iso-8601).log"
 shift
 echo "Executing '$cmd $@' and logging to '$logfile'."
-$cmd "$@" > "$logfile"
+$cmd "$@" > "$logfile" 2>&1
 status=$?
 if [ "$status" -ne "0" ]; then
     echo "Error: '$cmd $@' failed with code $status."
