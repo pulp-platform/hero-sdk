@@ -105,9 +105,11 @@ jobs:
       script:
         - .ci/travis-exec-log ./hero-z-7045-builder -i
       after_success:
+        # Remove build archive on S3.
         - aws s3 rm s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER.tar.gz
 
 after_success:
+  # Update build archive on S3.
   - tar -c --use-compress-program=pigz -f $HOME/$TRAVIS_BUILD_NUMBER.tar.gz -C $TRAVIS_BUILD_DIR/.. hero-sdk
   - aws s3 cp $HOME/$TRAVIS_BUILD_NUMBER.tar.gz s3://travis-build-stages-hero-sdk/
 
