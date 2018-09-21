@@ -105,5 +105,5 @@ jobs:
       after_success:
         - aws s3 rm --recursive s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER
 
-after_succes:
+after_success:
   - aws s3 sync $TRAVIS_BUILD_DIR s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER
