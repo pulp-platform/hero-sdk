@@ -47,7 +47,7 @@ before_install:
   - pip install --user awscli
   - aws configure set aws_access_key_id $AWS_ACCESS_KEY
   - aws configure set aws_secret_access_key $AWS_SECRET_KEY
-  - aws ls s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER.tar.gz && \
+  - aws s3 ls s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER.tar.gz && \
     aws s3 cp s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER.tar.gz $HOME/ && \
     tar -xf $HOME/$TRAVIS_BUILD_NUMBER.tar.gz -C $TRAVIS_BUILD_DIR/..
 
