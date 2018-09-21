@@ -109,3 +109,9 @@ jobs:
 after_success:
   - tar -czf $HOME/$TRAVIS_BUILD_NUMBER.tar.gz -C $TRAVIS_BUILD_DIR/.. hero-sdk
   - aws s3 cp $HOME/$TRAVIS_BUILD_NUMBER.tar.gz s3://travis-build-stages-hero-sdk/
+
+after_failure:
+  # Replace build archive on S3 with dump of this job.
+  - tar -czf $HOME/$TRAVIS_JOB_NUMBER-failed.tar.gz -C $TRAVIS_BUILD_DIR/.. hero-sdk
+  - aws s3 cp $HOME/$TRAVIS_JOB_NUMBER-failed.tar.gz s3://travis-build-stages-hero-sdk/
+  - aws s3 rm s3://travis-build-stages-hero-sdk/$TRAVIS_BUILD_NUMBER.tar.gz
