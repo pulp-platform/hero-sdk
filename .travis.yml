@@ -52,7 +52,8 @@ before_install:
 
 stages:
   - setup-source
-  - setup-riscv-gcc
+  - setup-riscv-gcc-1
+  - setup-riscv-gcc-2
   - setup-pulp-sdk
   - setup-arm-gcc
   - setup-linux
@@ -70,8 +71,17 @@ jobs:
         - git submodule update --init --recursive --recommend-shallow
         - .ci/travis-exec-log ./hero-z-7045-builder -s
 
-    - stage: setup-riscv-gcc
-      name: build RISC-V GCC
+    - stage: setup-riscv-gcc-1
+      name: build RISC-V GCC (part 1)
+      env:
+        - HERO_TRAVIS_FIRST_PART=true
+      script:
+        - .ci/travis-exec-log ./hero-z-7045-builder -r
+
+    - stage: setup-riscv-gcc-2
+      name: build RISC-V GCC (part 2)
+      env:
+        - HERO_TRAVIS_SECOND_PART=true
       script:
         - .ci/travis-exec-log ./hero-z-7045-builder -r
 
