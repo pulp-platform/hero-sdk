@@ -1,3 +1,6 @@
+<!---
+[![Build Status](https://iis-jenkins.ee.ethz.ch/job/hero-sdk-pipeline/badge/icon)](https://iis-jenkins.ee.ethz.ch/job/hero-sdk-pipeline)
+-->
 # HERO Software Development Kit
 **HERO** \[[1](https://arxiv.org/abs/1712.06497)\], the open Heterogeneous Research Platform, combines a **PULP-based** \[[2](https://ieeexplore.ieee.org/document/7477325/)\] open-source parallel manycore accelerator implemented on FPGA with a hard ARM Cortex-A multicore host processor running full-stack Linux. HERO is the **first heterogeneous system architecture** that combines a powerful ARM multicore host with a highly parallel and scalable manycore accelerator based on a **RISC-V cores**.
 HERO offers a **complete hardware and software platform** which advances the state of the art of transparent accelerator programming using the **OpenMP v4.5 Accelerator Model**. The programmer can write a single application source file for the host and use OpenMP directives for parallelization and accelerator offloading. Lower-level details such as differing ISAs as well as **shared virtual memory (SVM)** \[[3](https://ieeexplore.ieee.org/document/7797491/)\] between host and accelerator are handled by our heterogeneous toolchain based on GCC 7 \[[4](https://dl.acm.org/citation.cfm?id=3079071)\], runtime libraries, kernel driver and our open-source hardware IPs.
@@ -75,7 +78,7 @@ Next, start `fdisk` using
 sudo fdisk /dev/sdX
 ```
 and then type `n` followed by `p` and `1` to create a new primary partition.
-Type `1` followed by `1G` to define the first and last cylinder, respectively.
+Type `1` followed by `+1G` to define the first and last cylinder, respectively.
 Then, type `n` followed by `p` and `2` to create a second primary partition.
 Select the first and last cylinder of this partition to use the rest of the SD card.
 Type `p` to list the newly created partitions and to get their device nodes, e.g., `/dev/sdX1`.

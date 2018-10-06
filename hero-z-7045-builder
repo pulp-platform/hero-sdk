@@ -15,12 +15,14 @@
 #
 
 # Error handler
-set -e
-trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
-trap 'echo FAILED COMMAND: $previous_command' ERR
+# set -e
+# trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+# trap 'echo FAILED COMMAND: $previous_command' ERR
+
+HAVE_ARTIFACT=false
 
 if [[ ! -f "${0##*/}" ]]; then
-    echo "Error: ${0##*/} should be launched from the directory that contains it"
+    echo >&2 "Error: ${0##*/} should be launched from the directory that contains it"
     exit 1
 fi
 
@@ -49,8 +51,21 @@ get_sources() {
     update_env
 
     cd ${HERO_TOOLCHAIN_DIR}
-    git submodule update --init --recursive
+    if [ "$1" = true ] ; then
+        hero_toolchain_artifact -d
+        if [ $? -ne 0 ]; then
+            echo  >&2 "warning: we have not artifact. We need to rebuild everything."
+            cd ${HERO_TOOLCHAIN_DIR}
+            hero_toolchain_build -d
+            HAVE_ARTIFACT=false
+        else
+            HAVE_ARTIFACT=true
+        fi
+    else
+        hero_toolchain_build -d
+    fi
 
+    
     cd ${HERO_PULP_SDK_DIR}
     git submodule update --init --recursive
 
@@ -65,12 +80,15 @@ build_riscv32_toolchain() {
     cd ${HERO_SDK_DIR}
     update_env
 
-    cd ${HERO_TOOLCHAIN_DIR}
-    ./hero_riscv32_toolchain_builder -dPj
+    hero_toolchain_build -t accel -Sj
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: build_riscv32_toolchain failed, aborting now."
+        echo >&2 "ERROR: build_riscv32_toolchain failed, aborting now."
         exit 1
+    fi
+
+    if [[ ! ${HERO_CI+x} ]]; then
+        hero_toolchain_build -x
     fi
 }
 
@@ -82,7 +100,7 @@ build_pulp_sdk() {
     source scripts/hero/setup.sh
     
     if [ $? -ne 0 ]; then
-        echo "ERROR: build_pulp_sdk failed, aborting now."
+        echo >&2 "ERROR: build_pulp_sdk failed, aborting now."
         exit 1
     fi
 }
@@ -94,12 +112,15 @@ build_arm_toolchain() {
     # requires Linux kernel headers
     prepare_linux
 
-    cd ${HERO_TOOLCHAIN_DIR}
-    ./hero_arm_toolchain_builder -dPj
+    hero_toolchain_build -t host -Sj
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: build_arm_toolchain failed, aborting now."
+        echo >&2 "ERROR: build_arm_toolchain failed, aborting now."
         exit 1
+    fi
+
+    if [[ -z "${HERO_CI}" ]]; then
+        hero_toolchain_build -x
     fi
 }
 
@@ -114,7 +135,7 @@ build_linux() {
     ./build.sh
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: build_linux failed, aborting now."
+        echo >&2 "ERROR: build_linux failed, aborting now."
         exit 1
     fi
 }
@@ -128,7 +149,7 @@ build_offload() {
     make clean build
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: Build of the Linux PULP driver failed, aborting now."
+        echo >&2 "ERROR: Build of the Linux PULP driver failed, aborting now."
         exit 1
     fi
 
@@ -137,7 +158,7 @@ build_offload() {
     make clean build
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: Build of the PULP library failed, aborting now."
+        echo >&2 "ERROR: Build of the PULP library failed, aborting now."
         exit 1
     fi
 
@@ -146,7 +167,7 @@ build_offload() {
     make clean build
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: Build of the PULP UART reader failed, aborting now."
+        echo >&2 "ERROR: Build of the PULP UART reader failed, aborting now."
         exit 1
     fi
 }
@@ -156,23 +177,31 @@ build_hero_toolchain() {
     update_env
 
     cd ${HERO_TOOLCHAIN_DIR}
-    ./hero_riscv32_toolchain_builder -gj
+    hero_toolchain_build -t accel -gj
     if [ $? -ne 0 ]; then
-        echo "ERROR: build_hero_toolchain failed for PULP, aborting now."
+        echo >&2 "ERROR: build_hero_toolchain failed for PULP, aborting now."
         exit 1
     fi
 
-    ./hero_arm_toolchain_builder -gj
+    if [[ ! ${HERO_CI+x} ]]; then
+        hero_toolchain_build -x
+    fi
+
+    hero_toolchain_build -t host -gj
     if [ $? -ne 0 ]; then
-        echo "ERROR: build_hero_toolchain failed for host, aborting now."
+        echo >&2 "ERROR: build_hero_toolchain failed for host, aborting now."
         exit 1
+    fi
+
+    if [[ ! ${HERO_CI+x} ]]; then
+        hero_toolchain_build -x
     fi
 
     # Build the HERO target library
     cd ${HERO_SDK_DIR}/libhero-target
     make clean header build
     if [ $? -ne 0 ]; then
-        echo "ERROR: Build of the HERO target library failed, aborting now."
+        echo >&2 "ERROR: Build of the HERO target library failed, aborting now."
         exit 1
     fi
 }
@@ -182,13 +211,15 @@ install() {
     update_env
 
     if [[ -z "${HERO_TARGET_HOST}" ]]; then
-        echo "ERROR: HERO target platform not defined, aborting now."
+        echo >&2 "ERROR: HERO target platform not defined, aborting now."
+        exit 1
     fi
 
     TARGET=`echo ${HERO_TARGET_HOST} | rev | cut -d@ -f-1 | rev`
     ping ${TARGET} -c 1 > /dev/null
     if [ $? -ne 0 ]; then
-        echo "ERROR: HERO target platform not online, aborting now."
+        echo >&2 "ERROR: HERO target platform not online, aborting now."
+        exit 1
     fi
 
     # Build and install the Linux kernel-level PULP driver
@@ -196,7 +227,7 @@ install() {
     make clean all
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: Build of the Linux PULP driver failed, aborting now."
+        echo >&2 "ERROR: Build of the Linux PULP driver failed, aborting now."
         exit 1
     fi
 
@@ -205,7 +236,7 @@ install() {
     make clean all
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: Build of the PULP library failed, aborting now."
+        echo >&2 "ERROR: Build of the PULP library failed, aborting now."
         exit 1
     fi
 
@@ -214,16 +245,15 @@ install() {
     make clean all
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: Build of the PULP UART reader failed, aborting now."
+        echo >&2 "ERROR: Build of the PULP UART reader failed, aborting now."
         exit 1
     fi
 
     # Install the HERO toolchain
-    cd ${HERO_TOOLCHAIN_DIR}
-    scripts/./install_toolchain.sh
+    hero_toolchain_installer
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: HERO toolchain installation failed, aborting now."
+        echo >&2 "ERROR: HERO toolchain installation failed, aborting now."
         exit 1
     fi
 
@@ -232,7 +262,48 @@ install() {
     make clean all
 
     if [ $? -ne 0 ]; then
-        echo "ERROR: Build of the HERO target library failed, aborting now."
+        echo >&2 "ERROR: Build of the HERO target library failed, aborting now."
+        exit 1
+    fi
+}
+
+make_artifacts() {
+    cd ${HERO_SDK_DIR}
+    update_env
+
+    hero_toolchain_artifact -m
+    
+    if [ $? -ne 0 ]; then
+        echo >&2 "ERROR: Build of the HERO target library failed, aborting now."
+        exit 1
+    fi
+}
+
+make_ci_tests() {
+    cd ${HERO_SDK_DIR}
+    update_env
+
+    if [[ -z "${HERO_TARGET_HOST}" ]]; then
+        echo >&2 "ERROR: HERO target platform not defined, aborting now."
+        exit 1
+    fi
+
+    TARGET=`echo ${HERO_TARGET_HOST} | rev | cut -d@ -f-1 | rev`
+    ping ${TARGET} -c 1 > /dev/null
+    if [ $? -ne 0 ]; then
+        echo >&2 "ERROR: HERO target platform not online, aborting now."
+        exit 1        
+    fi
+
+    if [ ! -d ${HERO_SDK_DIR}/hero-testsuite ]; then
+        git clone https://github.com/pulp-platform/hero-testsuite.git
+    fi
+    
+    cd hero-testsuite
+    plptest --threads=1 --max-timeout=30
+
+    if [ $? -ne 0 ]; then
+        echo >&2 "ERROR: Build of the HERO target library failed, aborting now."
         exit 1
     fi
 }
@@ -240,15 +311,13 @@ install() {
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hAsrpaloti]
-HERO SDK builder
-----------------------------------------------------
+Usage: ${0##*/} [-A | -srpalot] [-hizc]
 
-HERO toolchain commands
+ALL Command
 ----------------------------------------------------
 
   -A : build whole HERO toolchain and its dependecies:
-    > get sources
+    > get sources (try get artifacts)
     > RISCV GCC standalone toolchain
     > PULP SDK
     > ARM GCC standalone toolchain
@@ -269,6 +338,13 @@ Commands for building individual components
   -t : HERO toolchain
   -i : install
 
+
+CI Commands
+----------------------------------------------------
+
+  -z : create GCC artifact
+  -c : execute CI tests
+
 EOF
 }
 
@@ -283,8 +359,11 @@ do_build_linux=false
 do_build_offload=false
 do_build_hero_toolchain=false
 do_install=false
+do_artifacts=false
+do_ci_tests=false
+do_try_get_artifact=false
 
-while getopts hAsrpaloti opt; do
+while getopts hAsrpalotizc opt; do
     case $opt in
 
         A)
@@ -295,6 +374,7 @@ while getopts hAsrpaloti opt; do
             do_build_linux=true
             do_build_offload=true
             do_build_hero_toolchain=true
+            do_try_get_artifact=true
             ;;
         s)
             do_get_sources=true
@@ -320,6 +400,12 @@ while getopts hAsrpaloti opt; do
         i)
             do_install=true
             ;;
+        z)
+            do_artifacts=true
+            ;;
+        c)
+            do_ci_tests=true
+            ;;
         h)
             show_help
             exit 0
@@ -332,35 +418,61 @@ while getopts hAsrpaloti opt; do
 done
 
 if [ "$do_get_sources" = true ] ; then
-    get_sources
+    get_sources $do_try_get_artifact
 fi
 
-if [ "$do_build_riscv32_toolchain" = true ] ; then
-    build_riscv32_toolchain
-fi
+if [ "$do_try_get_artifact" = true ] && [ "$HAVE_ARTIFACT" = true ] ; then
+    cd ${HERO_SDK_DIR}
+    update_env
+    echo "GCC Build skipped! ;-)"
 
-if [ "$do_build_pulp_sdk" = true ] ; then
-    build_pulp_sdk
-fi
+    if [ "$do_build_pulp_sdk" = true ] ; then
+        build_pulp_sdk
+    fi
 
-if [ "$do_build_arm_toolchain" = true ] ; then
-    build_arm_toolchain
-fi
+    if [ "$do_build_linux" = true ] ; then
+        build_linux
+    fi
 
-if [ "$do_build_linux" = true ] ; then
-    build_linux
-fi
+    if [ "$do_build_offload" = true ] ; then
+        build_offload
+    fi    
+else
+    if [ "$do_build_riscv32_toolchain" = true ] ; then
+        build_riscv32_toolchain
+    fi
 
-if [ "$do_build_offload" = true ] ; then
-    build_offload
-fi
+    if [ "$do_build_pulp_sdk" = true ] ; then
+        build_pulp_sdk
+    fi
 
-if [ "$do_build_hero_toolchain" = true ] ; then
-    build_hero_toolchain
+    if [ "$do_build_arm_toolchain" = true ] ; then
+        build_arm_toolchain
+    fi
+
+    if [ "$do_build_linux" = true ] ; then
+        build_linux
+    fi
+
+    if [ "$do_build_offload" = true ] ; then
+        build_offload
+    fi
+
+    if [ "$do_build_hero_toolchain" = true ] ; then
+        build_hero_toolchain
+    fi
 fi
 
 if [ "$do_install" = true ] ; then
     install
+fi
+
+if [ "$do_artifacts" = true ] ; then
+    make_artifacts
+fi
+
+if [ "$do_ci_tests" = true ] ; then
+    make_ci_tests
 fi
 
 # That's all folks!!

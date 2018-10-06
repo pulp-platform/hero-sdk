@@ -1,0 +1,98 @@
+pipeline {
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+    }
+    agent { 
+        label 'hero_sdk'
+    }
+    parameters {
+        string(name: 'HERO_CI', defaultValue: '1')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -s'
+                }
+            }
+        }
+        stage('Build PULP GCC (riscv32') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -r'
+                }
+            }
+        }
+        stage('Build PULP SDK') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -p'
+                }
+            }
+        }
+        stage('Build Host GCC (armv7') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -a'
+                }
+            }
+        }
+        stage('Build Linux') {
+            steps {
+                timeout(time: 40, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -l'
+                }
+            }
+        }
+        stage('Build HERO libraries') {
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -o'
+                }
+            }
+        }
+        stage('Build HERO GCC') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -t'
+                }
+            }
+        }
+
+        stage('Artifact') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -z'
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts 'hero-gcc-toolchain-*.tar.gz' 
+                }
+            }
+        }
+        stage('Install') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -i'
+                }
+            }
+        }
+        stage('Tests') {
+            steps {
+                script {
+                    try {
+                        sh './hero-z-7045-builder -c'
+                    } catch (Exception e) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
+            }
+            post {
+                always {
+                    junit 'junit-reports/*.xml'
+                }
+            }
+        }
+    }
+}

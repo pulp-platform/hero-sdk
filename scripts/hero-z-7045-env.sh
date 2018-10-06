@@ -42,7 +42,7 @@ export BOARD="zc706"
 # Host-side user-space config
 export ARCH="arm"
 export CROSS_COMPILE="arm-linux-gnueabihf-"
-export HERO_LIBPULP_DIR=`realpath hero-support/libpulp`
+export HERO_LIBPULP_DIR=`readlink -f hero-support/libpulp`
 
 # Host-side kernel-space config (1)
 export KERNEL_ARCH=${ARCH}
@@ -62,19 +62,19 @@ if [[ -z "${HERO_LINUX_KERNEL_DIR}" ]]; then
 fi
 
 if [[ -z "${HERO_TOOLCHAIN_DIR}" ]]; then
-  export HERO_TOOLCHAIN_DIR=`realpath hero-gcc-toolchain`
+  export HERO_TOOLCHAIN_DIR=`readlink -f hero-gcc-toolchain`
 fi
 
 if [[ -z "${HERO_PULP_SDK_DIR}" ]]; then
-  export HERO_PULP_SDK_DIR=`realpath pulp-sdk`
+  export HERO_PULP_SDK_DIR=`readlink -f pulp-sdk`
 fi
 
 if [[ -z "${HERO_SUPPORT_DIR}" ]]; then
-  export HERO_SUPPORT_DIR=`realpath hero-support`
+  export HERO_SUPPORT_DIR=`readlink -f hero-support`
 fi
 
 if [[ -z "${HERO_OMP_EXAMPLES_DIR}" ]]; then
-  export HERO_OMP_EXAMPLES_DIR=`realpath hero-openmp-examples`
+  export HERO_OMP_EXAMPLES_DIR=`readlink -f hero-openmp-examples`
 fi
 
 # Configure paths, prepare build environments
@@ -84,9 +84,7 @@ if [ -f ${HERO_PULP_SDK_DIR}/sourceme.sh ]; then
 fi
 
 if [ -f ${HERO_TOOLCHAIN_DIR}/setup.sh ]; then
-  cd ${HERO_TOOLCHAIN_DIR}
-  source setup.sh
-  cd $OLDPWD
+  source ${HERO_TOOLCHAIN_DIR}/setup.sh
 fi
 
 # Host-side kernel-space config (2)
