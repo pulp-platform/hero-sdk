@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](http://semver.org).
 
+## v1.2.0 - 2018-10-17
+
+### Added
+- Add shallow clone for `hero-gcc-toolchain` when `HERO_CI` is set.
+- Clean after installation on every GCC build stage when `HERO_CI` is set.
+- Add Jenkins Pipeline CI.
+- Add CI tests based on `plptest` framework.
+
+### Changed
+- `libhero-target` updated to v1.2.0. Adds HERO timer support and CI tests.
+- `hero-openmp-examples` updated to v1.3.0. Adds CI tests.
+
+### Fixed
+- Improved CI clone execution time (Fixed #24)
+- Scripts are now based on absolute addresses. Fix for CI tests.
+
 ## v1.1.0 - 2018-10-02
 
 ### Changed

@@ -1,0 +1,85 @@
+pipeline {
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+    }
+    agent { 
+        label 'hero_sdk'
+    }
+    parameters {
+        string(name: 'HERO_CI', defaultValue: '1')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -s'
+                }
+            }
+        }
+        stage('Build PULP GCC (riscv32') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -r'
+                }
+            }
+        }
+        stage('Build PULP SDK') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -p'
+                }
+            }
+        }
+        stage('Build Host GCC (armv7') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -a'
+                }
+            }
+        }
+        stage('Build Linux') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -l'
+                }
+            }
+        }
+        stage('Build HERO libraries') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -o'
+                }
+            }
+        }
+        stage('Build HERO GCC') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -t'
+                }
+            }
+            post {
+                success {
+                    sh '''
+                        source scripts/hero-z-7045-env.sh
+                        tar cvfz hero-gcc-toolchain-$(cd ${HERO_TOOLCHAIN_DIR}; git tag -l --points-at HEAD | grep '^v.*$').tag.gz hero-gcc-toolchain/install/*
+                    '''
+                    archiveArtifacts 'hero-gcc-toolchain-*.tar.gz' 
+                }
+            }            
+        }
+        stage('Tests') {
+            steps {
+                sh '''
+                    source scripts/hero-z-7045-env.sh                
+                    ./hero-z-7045-builder -oi
+                    plptest --threads=1 --max-timeout=120
+                '''
+            }
+            post {
+                always {
+                    junit 'junit-reports/*.xml'
+                }
+            }
+        }
+    }
+}
