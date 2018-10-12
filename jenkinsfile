@@ -1,0 +1,42 @@
+void setBuildStatus(String message, String state) {
+  step([
+      $class: "GitHubCommitStatusSetter",
+      reposSource: [$class: "ManuallyEnteredRepositorySource", url: "https://github.com/pulp-platform/hero-sdk"],
+      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
+      errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+      statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
+  ]);
+}
+
+pipeline {
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+    }
+    agent { 
+        label 'hero_sdk'
+    }
+    parameters {
+        string(name: 'HERO_MAX_PARALLEL_BUILD_JOBS', defaultValue: '12')
+        string(name: 'HERO_CI', defaultValue: '1')
+    }
+    stages {
+        stage('get_sources') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -s'
+                }
+            }
+            post {
+                unstable {
+                    mail to: 'alessandro.capotondi@unibo.it',
+                         subject: "Unstable: ${currentBuild.fullDisplayName}",
+                         body: "Something is wrong with ${env.BUILD_URL}: some tests were broken."
+                    setBuildStatus("Build failed", "FAILURE");
+                }
+                success {
+                    setBuildStatus("Build succeeded", "SUCCESS");
+                }
+            }
+        }
+    }
+}
