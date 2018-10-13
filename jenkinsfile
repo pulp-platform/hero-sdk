@@ -1,13 +1,3 @@
-void setBuildStatus(String message, String state) {
-  step([
-      $class: "GitHubCommitStatusSetter",
-      reposSource: [$class: "ManuallyEnteredRepositorySource", url: "https://github.com/pulp-platform/hero-sdk"],
-      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
-      errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
-      statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
-  ]);
-}
-
 pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
@@ -20,23 +10,80 @@ pipeline {
         string(name: 'HERO_CI', defaultValue: '1')
     }
     stages {
-        stage('get_sources') {
+        stage('Checkout') {
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
                     sh './hero-z-7045-builder -s'
                 }
             }
-            post {
-                unstable {
-                    mail to: 'alessandro.capotondi@unibo.it',
-                         subject: "Unstable: ${currentBuild.fullDisplayName}",
-                         body: "Something is wrong with ${env.BUILD_URL}: some tests were broken."
-                    setBuildStatus("Build failed", "FAILURE");
-                }
-                success {
-                    setBuildStatus("Build succeeded", "SUCCESS");
+        }
+        stage('Build PULP GCC (riscv32') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -r'
                 }
             }
         }
+        stage('Build PULP SDK') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -p'
+                }
+            }
+        }
+        stage('Build Host GCC (armv7') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -a'
+                }
+            }
+        }
+        stage('Build Linux') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -l'
+                }
+            }
+        }
+        stage('Build HERO libraries') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -o'
+                }
+            }
+        }
+        stage('Build HERO GCC') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -t'
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'This will run only if successful'
+        }
+        failure {
+            echo 'This will run only if failed'
+        }
+        unstable {
+            echo 'This will run only if the run was marked as unstable'
+        }
+        changed {
+            echo 'This will run only if the state of the Pipeline has changed'
+            echo 'For example, if the Pipeline was previously failing but is now successful'
+        }
+/*************        
+        unstable {
+            githubNotify account: 'alessandrocapotondi', context: 'Checkout', credentialsId: 'jenkins', description: '', gitApiUrl: '', repo: '***', sha: "${env.GIT_COMMIT}", status: 'FAILURE', targetUrl: "${env.BUILD_URL}"
+        }
+        success {
+            githubNotify account: 'alessandrocapotondi', context: 'Checkout', credentialsId: 'jenkins', description: '', gitApiUrl: '', repo: '***', sha: "${env.GIT_COMMIT}", status: 'SUCCESS', targetUrl: "${env.BUILD_URL}"
+        }
+*************/
     }
 }
