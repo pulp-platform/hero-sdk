@@ -1,0 +1,89 @@
+pipeline {
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+    }
+    agent { 
+        label 'hero_sdk'
+    }
+    parameters {
+        string(name: 'HERO_MAX_PARALLEL_BUILD_JOBS', defaultValue: '12')
+        string(name: 'HERO_CI', defaultValue: '1')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -s'
+                }
+            }
+        }
+        stage('Build PULP GCC (riscv32') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -r'
+                }
+            }
+        }
+        stage('Build PULP SDK') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -p'
+                }
+            }
+        }
+        stage('Build Host GCC (armv7') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -a'
+                }
+            }
+        }
+        stage('Build Linux') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -l'
+                }
+            }
+        }
+        stage('Build HERO libraries') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -o'
+                }
+            }
+        }
+        stage('Build HERO GCC') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh './hero-z-7045-builder -t'
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'This will run only if successful'
+        }
+        failure {
+            echo 'This will run only if failed'
+        }
+        unstable {
+            echo 'This will run only if the run was marked as unstable'
+        }
+        changed {
+            echo 'This will run only if the state of the Pipeline has changed'
+            echo 'For example, if the Pipeline was previously failing but is now successful'
+        }
+/*************        
+        unstable {
+            githubNotify account: 'alessandrocapotondi', context: 'Checkout', credentialsId: 'jenkins', description: '', gitApiUrl: '', repo: '***', sha: "${env.GIT_COMMIT}", status: 'FAILURE', targetUrl: "${env.BUILD_URL}"
+        }
+        success {
+            githubNotify account: 'alessandrocapotondi', context: 'Checkout', credentialsId: 'jenkins', description: '', gitApiUrl: '', repo: '***', sha: "${env.GIT_COMMIT}", status: 'SUCCESS', targetUrl: "${env.BUILD_URL}"
+        }
+*************/
+    }
+}
