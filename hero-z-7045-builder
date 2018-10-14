@@ -49,8 +49,8 @@ get_sources() {
     update_env
 
     cd ${HERO_TOOLCHAIN_DIR}
-    git submodule update --init --recursive
-
+    ./hero_arm_toolchain_builder -d
+    
     cd ${HERO_PULP_SDK_DIR}
     git submodule update --init --recursive
 
@@ -66,11 +66,15 @@ build_riscv32_toolchain() {
     update_env
 
     cd ${HERO_TOOLCHAIN_DIR}
-    ./hero_riscv32_toolchain_builder -dPj
+    ./hero_riscv32_toolchain_builder -Pj
 
     if [ $? -ne 0 ]; then
         echo "ERROR: build_riscv32_toolchain failed, aborting now."
         exit 1
+    fi
+
+    if [[ ! ${HERO_CI+x} ]]; then
+        ./hero_riscv32_toolchain_builder -x
     fi
 }
 
@@ -95,11 +99,15 @@ build_arm_toolchain() {
     prepare_linux
 
     cd ${HERO_TOOLCHAIN_DIR}
-    ./hero_arm_toolchain_builder -dPj
+    ./hero_arm_toolchain_builder -Pj
 
     if [ $? -ne 0 ]; then
         echo "ERROR: build_arm_toolchain failed, aborting now."
         exit 1
+    fi
+
+    if [[ -z "${HERO_CI}" ]]; then
+        ./hero_arm_toolchain_builder -x
     fi
 }
 
@@ -162,10 +170,18 @@ build_hero_toolchain() {
         exit 1
     fi
 
+    if [[ ! ${HERO_CI+x} ]]; then
+        ./hero_riscv32_toolchain_builder -x
+    fi
+
     ./hero_arm_toolchain_builder -gj
     if [ $? -ne 0 ]; then
         echo "ERROR: build_hero_toolchain failed for host, aborting now."
         exit 1
+    fi
+
+    if [[ ! ${HERO_CI+x} ]]; then
+        ./hero_arm_toolchain_builder -x
     fi
 
     # Build the HERO target library
