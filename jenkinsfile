@@ -6,7 +6,7 @@ pipeline {
         label 'hero_sdk'
     }
     parameters {
-        string(name: 'HERO_MAX_PARALLEL_BUILD_JOBS', defaultValue: '12')
+        string(name: 'HERO_MAX_PARALLEL_BUILD_JOBS', defaultValue: '24')
         string(name: 'HERO_CI', defaultValue: '1')
     }
     stages {
