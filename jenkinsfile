@@ -39,21 +39,21 @@ pipeline {
         }
         stage('Build Linux') {
             steps {
-                timeout(time: 30, unit: 'MINUTES') {
+                timeout(time: 40, unit: 'MINUTES') {
                     sh './hero-z-7045-builder -l'
                 }
             }
         }
         stage('Build HERO libraries') {
             steps {
-                timeout(time: 30, unit: 'MINUTES') {
+                timeout(time: 5, unit: 'MINUTES') {
                     sh './hero-z-7045-builder -o'
                 }
             }
         }
         stage('Build HERO GCC') {
             steps {
-                timeout(time: 30, unit: 'MINUTES') {
+                timeout(time: 40, unit: 'MINUTES') {
                     sh './hero-z-7045-builder -t'
                 }
             }
