@@ -253,10 +253,50 @@ install() {
     fi
 }
 
+make_artifacts() {
+    cd ${HERO_SDK_DIR}
+    update_env
+
+    GCC_ARTIFACT_NAME=$(cd $HERO_TOOLCHAIN_DIR; git tag -l --points-at HEAD)
+
+    if [[ -z "$GCC_ARTIFACT_NAME" ]]; then
+        GCC_ARTIFACT_NAME=$(cd ${HERO_TOOLCHAIN_DIR}; git rev-parse --short HEAD)
+    fi
+
+    tar cvfz hero-gcc-toolchain-${GCC_ARTIFACT_NAME}.tag.gz ${HERO_GCC_INSTALL_DIR}
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Build of the HERO target library failed, aborting now."
+        exit 1
+    fi
+}
+
+make_ci_tests() {
+    cd ${HERO_SDK_DIR}
+    update_env
+
+    if [[ -z "${HERO_TARGET_HOST}" ]]; then
+        echo "ERROR: HERO target platform not defined, aborting now."
+    fi
+
+    TARGET=`echo ${HERO_TARGET_HOST} | rev | cut -d@ -f-1 | rev`
+    ping ${TARGET} -c 1 > /dev/null
+    if [ $? -ne 0 ]; then
+        echo "ERROR: HERO target platform not online, aborting now."
+    fi
+
+    plptest --threads=1 --max-timeout=120
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Build of the HERO target library failed, aborting now."
+        exit 1
+    fi
+}
+
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hAsrpaloti]
+Usage: ${0##*/} [-hAsrpalotizc]
 HERO SDK builder
 ----------------------------------------------------
 
@@ -285,6 +325,13 @@ Commands for building individual components
   -t : HERO toolchain
   -i : install
 
+
+CI Commands
+----------------------------------------------------
+
+  -z : create GCC artifact
+  -c : execute CI tests
+
 EOF
 }
 
@@ -299,8 +346,10 @@ do_build_linux=false
 do_build_offload=false
 do_build_hero_toolchain=false
 do_install=false
+do_artifacts=false
+do_ci_tests=false
 
-while getopts hAsrpaloti opt; do
+while getopts hAsrpalotizc opt; do
     case $opt in
 
         A)
@@ -335,6 +384,12 @@ while getopts hAsrpaloti opt; do
             ;;
         i)
             do_install=true
+            ;;
+        z)
+            do_artifacts=true
+            ;;
+        c)
+            do_ci_tests=true
             ;;
         h)
             show_help
@@ -377,6 +432,14 @@ fi
 
 if [ "$do_install" = true ] ; then
     install
+fi
+
+if [ "$do_artifacts" = true ] ; then
+    make_artifacts
+fi
+
+if [ "$do_ci_tests" = true ] ; then
+    make_ci_tests
 fi
 
 # That's all folks!!
