@@ -57,23 +57,55 @@ pipeline {
                     sh './hero-z-7045-builder -t'
                 }
             }
+        }
+
+        stage ('Build & Test') {
+            steps {
+                sh 'echo Building... Failure here will fail the build'
+                script {
+                    try {
+                        echo 'Running tests...'
+                        sh 'exit 1'
+                    }
+                    catch (exc) {
+                        echo 'Testing failed!'
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
+            }
+        }
+
+        stage('Create Artifact') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+	                script {
+    	                try {
+    	                	sh './hero-z-7045-builder -z'
+                	    }
+                    	catch (exc) {
+                        	echo 'Create Artifact Failed!'
+                        	currentBuild.result = 'UNSTABLE'
+                    	}
+                	}
+                }
+            }
             post {
                 success {
-                    sh '''
-                        source scripts/hero-z-7045-env.sh
-                        tar cvfz hero-gcc-toolchain-$(cd ${HERO_TOOLCHAIN_DIR}; git tag -l --points-at HEAD | grep '^v.*$').tag.gz hero-gcc-toolchain/install/*
-                    '''
                     archiveArtifacts 'hero-gcc-toolchain-*.tar.gz' 
                 }
-            }            
+            }
         }
         stage('Tests') {
             steps {
-                sh '''
-                    source scripts/hero-z-7045-env.sh                
-                    ./hero-z-7045-builder -oi
-                    plptest --threads=1 --max-timeout=120
-                '''
+	            script {
+	                try {
+	                	sh './hero-z-7045-builder -c'
+	        	    }
+	            	catch (exc) {
+	                	echo 'Tests Failed!'
+	                	currentBuild.result = 'UNSTABLE'
+	            	}
+	        	}
             }
             post {
                 always {
