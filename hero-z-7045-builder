@@ -87,7 +87,7 @@ build_riscv32_toolchain() {
         exit 1
     fi
 
-    if [[ ! ${HERO_CI+x} ]]; then
+    if [[ ${HERO_CI+x} ]]; then
         hero_toolchain_build -x
     fi
 }
@@ -183,7 +183,7 @@ build_hero_toolchain() {
         exit 1
     fi
 
-    if [[ ! ${HERO_CI+x} ]]; then
+    if [[ ${HERO_CI+x} ]]; then
         hero_toolchain_build -x
     fi
 
@@ -193,7 +193,7 @@ build_hero_toolchain() {
         exit 1
     fi
 
-    if [[ ! ${HERO_CI+x} ]]; then
+    if [[ ${HERO_CI+x} ]]; then
         hero_toolchain_build -x
     fi
 
@@ -433,10 +433,10 @@ if [ "$do_try_get_artifact" = true ] && [ "$HAVE_ARTIFACT" = true ] ; then
 
     if [ "$do_build_linux" = true ] ; then
         if [[ ! ${HERO_CI+x} ]]; then
-            prepare_linux
-            echo "Linux Build skipped! ;-)"            
-        else
             build_linux
+        else
+            prepare_linux
+            echo "Linux Build skipped! ;-)"
         fi
     fi
 
