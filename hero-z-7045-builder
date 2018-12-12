@@ -432,7 +432,12 @@ if [ "$do_try_get_artifact" = true ] && [ "$HAVE_ARTIFACT" = true ] ; then
     fi
 
     if [ "$do_build_linux" = true ] ; then
-        build_linux
+        if [[ ! ${HERO_CI+x} ]]; then
+            prepare_linux
+            echo "Linux Build skipped! ;-)"            
+        else
+            build_linux
+        fi
     fi
 
     if [ "$do_build_offload" = true ] ; then
