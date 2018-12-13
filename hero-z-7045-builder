@@ -301,7 +301,7 @@ make_ci_tests() {
     
     cd hero-testsuite
     git pull origin master
-    plptest --threads=1 --max-timeout=10 --stdout
+    plptest --threads=1 --max-timeout=-1 --stdout
 
     if [ $? -ne 0 ]; then
         echo >&2 "ERROR: Build of the HERO target library failed, aborting now."
