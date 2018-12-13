@@ -18,6 +18,8 @@ The HERO software development kit (SDK) contains the following submodules:
 The HERO SDK currently supports the [Xilinx Zynq ZC706 Evaluation Kit](https://www.xilinx.com/products/boards-and-kits/ek-z7-zc706-g.html) as target hardware platform.
 
 ### Software
+First, make sure your shell environment does not deviate from the system defaults regarding paths (`PATH`, `LD_LIBRARY_PATH`, etc) before setting up the SDK or sourcing the environment of the HERO SDK.
+
 #### Ubuntu 16.04
 Starting from a fresh Ubuntu 16.04 distribution, here are the commands to be executed to get all required dependencies:
 ```
