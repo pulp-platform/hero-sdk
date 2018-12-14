@@ -17,12 +17,22 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Console output or screenshots**
+If any console output is related to the problem, please post it (in a [code
+block](https://github.github.com/gfm/#fenced-code-blocks)) including the command
+that led to the output.  If the problem only appears in a graphical interface,
+please post a screenshot.
 
-**OS Informations**
- - OS: [e.g. iOS]
- - Version [e.g. 22]
+**OS and environment information**
+Output of `lsb_release -a`:
+```
+paste the output here
+```
+
+Output of `env`:
+```
+paste the output here
+```
 
 **Additional context**
 Add any other context about the problem here.
