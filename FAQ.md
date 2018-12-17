@@ -4,7 +4,7 @@ This file contains a collection of errors and issues you may face when working w
 
 ## Compilation Errors
 
-### Vivado's cmake version leads to PULP SDK build error
+### 1. Vivado's cmake version leads to PULP SDK build error
 
 #### Symptoms
 During the build of PULP SDK the build fails as follow:
@@ -51,7 +51,7 @@ Do not source Vivado's `settings64.sh` before compiling the HERO SDK.
 
 ## Runtime Errors
 
-### Device opening error
+### 1. Device opening error
 
 #### Symptoms
 When you try to execute an application you get the following error:
@@ -73,7 +73,7 @@ cd ${HERO_TARGET_PATH_DRIVER}
 insmod pulp.ko
 ```
 
-### The application hangs
+### 2. The application hangs
 
 #### Symptoms
 When you try to execute an application on the HERO board, the host prints something like
@@ -94,7 +94,7 @@ cd ${HERO_TARGET_PATH_APPS}
 ./uart
 ```
 
-### Failed to map page for VA 0x00000000
+### 3. Failed to map page for VA 0x00000000
 
 #### Symptoms
 When you try to execute an application on the HERO board, the accelerator prints one or multiple error messages like
