@@ -23,7 +23,7 @@ First, make sure your shell environment does not deviate from the system default
 #### Ubuntu 16.04
 Starting from a fresh Ubuntu 16.04 distribution, here are the commands to be executed to get all required dependencies:
 ```
-sudo apt install build-essential bison flex git python3-pip gawk texinfo libgmp-dev libmpfr-dev libmpc-dev swig3.0 libjpeg-dev lsb-core doxygen python-sphinx sox graphicsmagick-libmagick-dev-compat libsdl2-dev libswitch-perl libftdi1-dev cmake u-boot-tools fakeroot
+sudo apt install build-essential autoconf bison flex git python3-pip gawk texinfo libgmp-dev libmpfr-dev libmpc-dev swig3.0 libjpeg-dev lsb-core doxygen python-sphinx sox graphicsmagick-libmagick-dev-compat libsdl2-dev libswitch-perl libftdi1-dev cmake u-boot-tools fakeroot
 sudo pip3 install artifactory twisted prettytable sqlalchemy pyelftools openpyxl xlsxwriter pyyaml numpy
 ```
 #### CentOS 7 (Experimental)
