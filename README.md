@@ -61,7 +61,7 @@ Once you have built the host Linux system, you can set up operation of the HERO 
 
 ### Format SD card (HERO boot medium)
 
-To properly format your SD card, insert it to your computer and type `dmesg` to find out the device number of the SD card.
+To properly format your SD card, insert it to your computer and type `dmesg` or `lsblk` to find out the device number of the SD card.
 In the following, it is referred to as `/dev/sdX`.
 
 **NOTE**: Executing the following commands on a wrong device number will corrupt the data on your workstation. You need root privileges to format the SD card.
@@ -76,8 +76,8 @@ Next, start `fdisk` using
 ```
 sudo fdisk /dev/sdX
 ```
-and then type `n` followed by `p` and `1` to create a new primary partition.
-Type `1` followed by `1G` to define the first and last cylinder, respectively.
+and then type `n` followed by `p`. Type the lowest possible number (e.g. `1` or `2048`) to create a new primary partition starting at the first possible block.
+Make the partition 1 GB large, so type `+1G` to define the last cylinder.
 Then, type `n` followed by `p` and `2` to create a second primary partition.
 Select the first and last cylinder of this partition to use the rest of the SD card.
 Type `p` to list the newly created partitions and to get their device nodes, e.g., `/dev/sdX1`.
