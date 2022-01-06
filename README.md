@@ -1,3 +1,7 @@
+# DEPRECATED
+
+This repository is part of a deprecated version of HERO.  Please refer to the [current HERO repository](https://github.com/pulp-platform/hero) for the current heterogeneous SDK.
+
 # HERO Software Development Kit
 **HERO** \[[1](https://arxiv.org/abs/1712.06497)\], the open Heterogeneous Research Platform, combines a **PULP-based** \[[2](https://ieeexplore.ieee.org/document/7477325/)\] open-source parallel manycore accelerator implemented on FPGA with a hard ARM Cortex-A multicore host processor running full-stack Linux. HERO is the **first heterogeneous system architecture** that combines a powerful ARM multicore host with a highly parallel and scalable manycore accelerator based on a **RISC-V cores**.
 HERO offers a **complete hardware and software platform** which advances the state of the art of transparent accelerator programming using the **OpenMP v4.5 Accelerator Model**. The programmer can write a single application source file for the host and use OpenMP directives for parallelization and accelerator offloading. Lower-level details such as differing ISAs as well as **shared virtual memory (SVM)** \[[3](https://ieeexplore.ieee.org/document/7797491/)\] between host and accelerator are handled by our heterogeneous toolchain based on GCC 7 \[[4](https://dl.acm.org/citation.cfm?id=3079071)\], runtime libraries, kernel driver and our open-source hardware IPs.
